@@ -1,4 +1,4 @@
-from django.shortcuts import render
+
 from django.contrib import messages
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
@@ -53,5 +53,40 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, 'user/login.html', {'form': form})
+
+
+def send_login_link_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            token = generate_token(email)
+            login_link = request.build_absolute_uri(
+                reverse('confirm-login-link', args=[token])
+            )
+            send_mail(
+                subject='لینک ورود به حساب',
+                message=f'برای ورود به حساب خود روی لینک زیر کلیک کنید:\n{login_link}',
+                from_email=None,
+                recipient_list=[email],
+            )
+            return render(request, 'user/email_sent.html')
+        except User.DoesNotExist:
+            return render(request, 'user/send_link.html', {'error': 'ایمیل پیدا نشد.'})
+    return render(request, 'user/send_link.html')
+
+from .utils import verify_token
+
+def confirm_login_link_view(request, token):
+    email = verify_token(token)
+    if email:
+        try:
+            user = User.objects.get(email=email)
+            login(request, user)
+            return redirect('home')  # یا هر صفحه‌ای که بعد از ورود می‌خوای
+        except User.DoesNotExist:
+            pass
+    return render(request, 'user/invalid_token.html')
+
 
 
