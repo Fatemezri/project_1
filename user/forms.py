@@ -6,26 +6,24 @@ class LoginForm(forms.Form):
     username = forms.CharField(
         label="نام کاربری",
         max_length=30,
-        widget=forms.TextInput(attrs={'placeholder': 'Username'})
+        widget=forms.TextInput(attrs={'placeholder': 'نام کاربری'})
     )
     contact = forms.CharField(
         label="ایمیل یا شماره موبایل",
         max_length=30,
-        widget=forms.TextInput(attrs={'placeholder': 'Email یا Phone'})
+        widget=forms.TextInput(attrs={'placeholder': 'ایمیل یا شماره همراه'})
     )
     password = forms.CharField(
         label="رمز عبور",
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'رمز عبور'})
     )
 
     def clean_contact(self):
         contact = self.cleaned_data['contact']
         # اعتبارسنجی ساده:
         if "@" in contact:
-            # یعنی ایمیله
             return contact
         elif contact.isdigit():
-            # یعنی شماره تلفنه
             return contact
         raise forms.ValidationError("ایمیل یا شماره تلفن معتبر وارد کنید.")
 
