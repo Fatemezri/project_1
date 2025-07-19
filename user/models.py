@@ -19,11 +19,11 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(username, email=email, password=password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=30, unique=True)
-    email = models.EmailField(unique=True, null=True, blank=True) # unique:ایمیل تکراری نباشه null:فیلد میتونه خالی باشه blanck: فرم میتونه خالی باشه
-    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    username = models.CharField('نام کاربر', max_length=30, unique=True)
+    email = models.EmailField( 'ایمیل',unique=True, null=True, blank=True) # unique:ایمیل تکراری نباشه null:فیلد میتونه خالی باشه blanck: فرم میتونه خالی باشه
+    phone = models.CharField( 'شماره همراه',max_length=20, unique=True, null=True, blank=True)
+    is_active = models.BooleanField( 'فعال',default=True)
+    is_staff = models.BooleanField('ادمین',default=False)
 
     objects = CustomUserManager()
 
