@@ -99,17 +99,15 @@ def signin_view(request):
             username = form.cleaned_data['username']
             contact = form.cleaned_data['contact']
             password = form.cleaned_data['password']
+def signin_view (request):
+     if request.method == 'POST':
+         form = signinForm(request.POST)
+         if form.is_valid():
+             username = form.cleaned_data['username']
+             contact = form.cleaned_data['contact']
+             password = form.cleaned_data['password']
 
-
-            try:
-                if '@' in contact:
-                    user = User.objects.get(username=username, email=contact)
-                else:
-                    user = User.objects.get(username=username, phone=contact)
-            except User.DoesNotExist:
-                messages.error(request, 'کاربر یافت نشد.')
-                return redirect('login')
-
+             user = form.save(commit=False)
 
             if '@' in contact:
                 token = generate_token(user.email)
@@ -125,12 +123,27 @@ def signin_view(request):
                 messages.success(request, 'لینک ورود به ایمیل شما ارسال شد.')
                 return redirect('login')
 
+             if '@' in contact:
+                 email = contact
+                 phone = None
 
             else:
                 #
                 messages.info(request, 'کد تایید به شماره شما ارسال شد.')
                 return redirect('verify-phone')  # صفحه ورود کد تأیید
+             else:
+                 phone = contact
+                 email = None
+
+
+             user = User(username=username, email=email, phone=phone)
+             user.set_password('password')
+             user.save()
 
     else:
         form = LoginForm()
+     else:
+         form = signinForm(request.POST)
+
+     return render(request, 'user/sign_in.html', {'form': form})
 
