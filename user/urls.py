@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_view, confirm_login_link_view, send_login_link_view, home
+from .views import login_view, confirm_login_link_view, send_login_link_view,signin_view, home
 
 
 urlpatterns = [
@@ -7,5 +7,6 @@ urlpatterns = [
     path('home/', home, name = 'home'),
     path('login/email/', send_login_link_view, name='send-login-link'),
     path('login/email/confirm/<str:token>/', confirm_login_link_view, name='confirm-login-link'),
+    path('signin/', signin_view, name='signin')
 ]
 
