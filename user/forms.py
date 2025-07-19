@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth import get_user_model
 user = get_user_model()
+from django.core.exceptions import ValidationError
+from .models import CustomUser
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -28,3 +30,42 @@ class LoginForm(forms.Form):
         raise forms.ValidationError("ایمیل یا شماره تلفن معتبر وارد کنید.")
 
 
+
+class signinForm(forms.ModelForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'placeholder': '...نام کارب'})
+    )
+    contact = forms.CharField(
+        widget=forms.TextInput(attrs={'placeholder': '...ایمیل یا شماره'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'رمز عبور'})
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': ' ...تکرار رمز'})
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ['username']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm = cleaned_data.get("confirm_password")
+
+        if password != confirm:
+            raise ValidationError("رمز عبور و تکرار آن یکسان نیستند.")
+
+        contact = cleaned_data.get("contact")
+        if contact:
+            if '@' in contact:
+                cleaned_data['email'] = contact
+                cleaned_data['phone'] = None
+            elif contact.isdigit():
+                cleaned_data['phone'] = contact
+                cleaned_data['email'] = None
+            else:
+                raise ValidationError("ایمیل یا شماره همراه شما معتبر نیست")
+
+        return cleaned_data
