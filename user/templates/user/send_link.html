@@ -1,0 +1,8 @@
+<form method="post">
+  {% csrf_token %}
+  <input type="email" name="email" placeholder="ایمیل شما" required>
+  <button type="submit">ارسال لینک ورود</button>
+</form>
+{% if error %}
+  <p style="color:red;">{{ error }}</p>
+{% endif %}
