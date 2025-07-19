@@ -9,7 +9,7 @@ UserModel = get_user_model()
 class UsernameAndContactBackend(BaseBackend):
     def authenticate(self, request, username=None, contact=None, password=None, **kwargs):
         try:
-            if '@' in contact:
+            if contact and '@' in contact:
                 user = UserModel.objects.get(username=username, email=contact)
             else:
                 user = UserModel.objects.get(username=username, phone=contact)
