@@ -82,7 +82,11 @@ class signinForm(forms.ModelForm):
                 cleaned_data['phone'] = contact
                 cleaned_data['email'] = None
             else:
-                raise ValidationError("ایمیل یا شماره همراه شما معتبر نیست")
+                raise ValidationError("ایمیل یا شماره همراه معتبر نیست.")
+        return cleaned_data
+
+
+
 class passwordResetForm(forms.Form):
     contact = forms.CharField(
         label='ایمیل/شماره همراه',
