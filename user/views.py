@@ -89,14 +89,20 @@ from .utils import verify_token
 
 def confirm_login_link_view(request, token):
     email = verify_token(token)
-    if email:
-        try:
-            user = User.objects.get(email=email)
-            login(request, user)
-            return redirect('home')  # یا هر صفحه‌ای که بعد از ورود می‌خوای
-        except User.DoesNotExist:
-            pass
-    return render(request, 'user/invalid_token.html')
+    if not email:
+        messages.error(request, 'لینک ورود منقضی شده یا نامعتبر است.')
+        return redirect('login')
+
+    try:
+        user = CustomUser.objects.get(email=email)
+        login(request, user)
+        messages.success(request, 'با موفقیت وارد شدید.')
+        return redirect('home')  # یا هر جایی که صفحه اصلیته
+    except CustomUser.DoesNotExist:
+        messages.error(request, 'کاربر یافت نشد.')
+        return redirect('login')
+
+
 def password_reset_view(request, token):
     email = verify_token(token)
     if not email:
@@ -217,15 +223,17 @@ def forgot_password_view(request):
                     request.session['reset_phone'] = user.phone
                     return redirect('verify_reset_code')  # صفحه وارد کردن کد
 
-             else:
-                 phone = contact
-                 email = None
             except CustomUser.DoesNotExist:
                 messages.error(request, 'کاربری با این اطلاعات پیدا نشد.')
     else:
         form = passwordResetForm()
 
     return render(request, 'user/forgot_password.html', {'form': form})
+
+
+def user_profile_view(request, slug):
+    user = get_object_or_404(CustomUser, slug=slug)
+    return render(request, 'user/profile.html', {'user_profile': user})
 
 
 
