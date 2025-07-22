@@ -46,12 +46,16 @@ def login_view(request):
                 messages.success(request, 'لینک ورود به ایمیل شما ارسال شد.')
                 return redirect('login')
 
-
+            # اگر شماره باشد
             else:
-                #
-                messages.info(request, 'کد تایید به شماره شما ارسال شد.')
-                return redirect('verify-phone')  # صفحه ورود کد تأیید
+                code = str(random.randint(100000, 999999))
+                request.session['otp_code'] = code
+                request.session['otp_user_id'] = user.id
 
+                send_verification_sms(user.phone, code)
+
+                messages.info(request, 'کد تایید به شماره شما ارسال شد.')
+                return redirect('verify-phone')
     else:
         form = LoginForm()
 
@@ -95,13 +99,6 @@ def confirm_login_link_view(request, token):
     return render(request, 'user/invalid_token.html')
 
 
-def signin_view (request):
-     if request.method == 'POST':
-         form = signinForm(request.POST)
-         if form.is_valid():
-             username = form.cleaned_data['username']
-             contact = form.cleaned_data['contact']
-             password = form.cleaned_data['password']
 def signin_view(request):
     if request.method == 'POST':
         form = signinForm(request.POST)
@@ -139,9 +136,63 @@ def signin_view(request):
 
 
 
-             if '@' in contact:
-                 email = contact
-                 phone = None
+def home(request):
+    return render(request,'user/home.html')
+
+
+# فرم درخواست بازیابی رمز عبور (شماره یا ایمیل)
+def PasswordReset_email_view(request):
+    if request.method == 'POST':
+        form = passwordResetForm(request.POST)
+        if form.is_valid():
+            contact = form.cleaned_data['contact']
+            try:
+                if '@' in contact:
+                    user = CustomUser.objects.get(email=contact)
+                    token = generate_token(user.email)
+                    reset_link = request.build_absolute_uri(reverse('password-reset', args=[token]))
+                    send_mail(
+                        subject='بازیابی رمز عبور',
+                        message=f'برای تغییر رمز عبور روی لینک کلیک کنید:\n{reset_link}',
+                        from_email='noreply@example.com',
+                        recipient_list=[user.email]
+                    )
+                    messages.success(request, "لینک تغییر رمز به ایمیل شما ارسال شد.")
+                    return redirect('login')
+                else:
+                    user = CustomUser.objects.get(phone=contact)
+                    code = str(random.randint(100000, 999999))
+                    request.session['reset_code'] = code
+                    request.session['reset_phone'] = user.phone
+                    send_verification_sms(user.phone, code)
+                    return redirect('verify_reset_code')
+            except CustomUser.DoesNotExist:
+                messages.error(request, "کاربری با این اطلاعات پیدا نشد.")
+    else:
+        form = passwordResetForm()
+
+    return render(request, 'user/passwordreset_email.html', {'form': form})
+
+
+
+
+def forgot_password_view(request):
+    if request.method == 'POST':
+        form = passwordResetForm(request.POST)
+        if form.is_valid():
+            contact = form.cleaned_data['contact']
+
+            try:
+                if '@' in contact:
+                    user = CustomUser.objects.get(email=contact)
+                    token = generate_token(user.email)
+                    verify_token(user.email, token)
+                    messages.success(request, 'لینک بازیابی به ایمیل شما ارسال شد.')
+                else:
+                    user = CustomUser.objects.get(phone=contact)
+                    send_verification_sms(user.phone, purpose='reset_password')
+                    request.session['reset_phone'] = user.phone
+                    return redirect('verify_reset_code')  # صفحه وارد کردن کد
 
              else:
                  phone = contact
@@ -156,6 +207,13 @@ def signin_view(request):
          form = signinForm(request.POST)
 
      return render(request, 'user/sign_in.html', {'form': form})
+
+
+def verify_phone_view(request):
+    if request.method == 'POST':
+        code = request.POST.get('code')
+        otp_code = request.session.get('otp_code')
+        user_id = request.session.get('otp_user_id')
 
         if not (code and otp_code and user_id):
             messages.error(request, 'اطلاعات ناقص است. لطفاً دوباره تلاش کنید.')

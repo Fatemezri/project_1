@@ -26,9 +26,26 @@ class LoginForm(forms.Form):
         if "@" in contact:
             return contact
         elif contact.isdigit():
-            return contact
-        raise forms.ValidationError("ایمیل یا شماره تلفن معتبر وارد کنید.")
+        contact = self.cleaned_data['contact'].strip()
 
+        # اگر ایمیل باشه
+        if '@' in contact:
+            try:
+                validate_email(contact)
+                return contact
+            except ValidationError:
+                raise forms.ValidationError("ایمیل وارد شده معتبر نیست.")
+
+        # در غیر این صورت، فرض می‌کنیم شماره موبایل باشه
+        contact = re.sub(r'\D', '', contact)
+
+        if contact.startswith('98') and len(contact) == 12:
+            contact = '0' + contact[2:]
+
+        if re.match(r'^09\d{9}$', contact):
+            return contact
+
+        raise forms.ValidationError("شماره موبایل معتبر نیست.")
 
 
 class signinForm(forms.ModelForm):
