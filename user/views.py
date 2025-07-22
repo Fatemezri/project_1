@@ -25,9 +25,12 @@ def login_view(request):
                 else:
                     user = User.objects.get(username=username, phone=contact)
             except User.DoesNotExist:
-                messages.error(request, 'کاربر یافت نشد.')
+                messages.error(request, 'کاربری با این مشخصات یافت نشد.')
                 return redirect('login')
 
+            if not check_password(password, user.password):
+                messages.error(request, 'رمز عبور اشتباه است.')
+                return redirect('login')
 
             if '@' in contact:
                 token = generate_token(user.email)
