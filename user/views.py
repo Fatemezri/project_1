@@ -52,10 +52,14 @@ def login_view(request):
                 request.session['otp_code'] = code
                 request.session['otp_user_id'] = user.id
 
-                send_verification_sms(user.phone, code)
 
-                messages.info(request, 'کد تایید به شماره شما ارسال شد.')
-                return redirect('verify-phone')
+                try:
+                    send_verification_sms(user.phone, code)
+                    messages.info(request, 'کد تأیید به شماره شما ارسال شد.')
+                    return redirect('verify-phone')
+                except Exception as e:
+                    messages.error(request, f'خطا در ارسال پیامک: {e}')
+                    return redirect('login')
     else:
         form = LoginForm()
 
