@@ -123,3 +123,24 @@ def signin_view (request):
 
      return render(request, 'user/sign_in.html', {'form': form})
 
+        if not (code and otp_code and user_id):
+            messages.error(request, 'اطلاعات ناقص است. لطفاً دوباره تلاش کنید.')
+            return redirect('login')
+
+        if code == otp_code:
+            try:
+                user = User.objects.get(id=user_id)
+                login(request, user)
+
+                # پاک‌سازی امن session
+                request.session.pop('otp_code', None)
+                request.session.pop('otp_user_id', None)
+
+                messages.success(request, f'{user.username} عزیز خوش آمدید!')
+                return redirect('home')
+            except User.DoesNotExist:
+                messages.error(request, 'کاربر یافت نشد.')
+        else:
+            messages.error(request, 'کد وارد شده اشتباه است.')
+
+    return render(request, 'user/verify_phone.html')

@@ -12,7 +12,7 @@ class LoginForm(forms.Form):
     )
     contact = forms.CharField(
         label="ایمیل یا شماره موبایل",
-        max_length=30,
+        max_length=50,
         widget=forms.TextInput(attrs={'placeholder': 'ایمیل یا شماره همراه'})
     )
     password = forms.CharField(
@@ -32,17 +32,21 @@ class LoginForm(forms.Form):
 
 
 class signinForm(forms.ModelForm):
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': '...نام کارب'})
-    )
     contact = forms.CharField(
+        label='ایمیل/شماره همراه',
+        required=True,
+        error_messages={'required': 'این فیلد اجباری است!'},
         widget=forms.TextInput(attrs={'placeholder': '...ایمیل یا شماره'})
     )
     password = forms.CharField(
+        label='رمز عبور',
+        required=True,
         widget=forms.PasswordInput(attrs={'placeholder': 'رمز عبور'})
     )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': ' ...تکرار رمز'})
+        label='تکرار رمز عبور',
+        required=True,
+        widget=forms.PasswordInput(attrs={'placeholder': 'تکرار رمز عبور'})
     )
 
     class Meta:
