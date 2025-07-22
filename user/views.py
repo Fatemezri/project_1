@@ -97,6 +97,29 @@ def confirm_login_link_view(request, token):
         except User.DoesNotExist:
             pass
     return render(request, 'user/invalid_token.html')
+def password_reset_view(request, token):
+    email = verify_token(token)
+    if not email:
+        return render(request, 'user/invalid_token.html')
+
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return render(request, 'user/invalid_token.html')
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "رمز عبور با موفقیت تغییر کرد.")
+            return redirect('login')
+    else:
+        form = PasswordChangeForm()
+
+    return render(request, 'user/password_reset.html', {'form': form})
+
 
 
 def signin_view(request):
@@ -197,16 +220,40 @@ def forgot_password_view(request):
              else:
                  phone = contact
                  email = None
+            except CustomUser.DoesNotExist:
+                messages.error(request, 'کاربری با این اطلاعات پیدا نشد.')
+    else:
+        form = passwordResetForm()
+
+    return render(request, 'user/forgot_password.html', {'form': form})
 
 
-             user = User(username=username, email=email, phone=phone)
-             user.set_password('password')
-             user.save()
 
-     else:
-         form = signinForm(request.POST)
+def password_reset_link_view(request, token):
+    email = verify_token(token)
+    if not email:
+        messages.error(request, 'لینک نامعتبر یا منقضی شده است.')
+        return redirect('login')
 
-     return render(request, 'user/sign_in.html', {'form': form})
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        messages.error(request, "کاربری با این ایمیل یافت نشد.")
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['new_password']
+            user.set_password(password)
+            user.save()
+            messages.success(request, 'رمز عبور با موفقیت تغییر یافت.')
+            return redirect('login')
+    else:
+        form = PasswordChangeForm()
+
+    return render(request, 'user/password_reset.html', {'form': form})
+
 
 
 def verify_phone_view(request):

@@ -21,11 +21,6 @@ class LoginForm(forms.Form):
     )
 
     def clean_contact(self):
-        contact = self.cleaned_data['contact']
-        # اعتبارسنجی ساده:
-        if "@" in contact:
-            return contact
-        elif contact.isdigit():
         contact = self.cleaned_data['contact'].strip()
 
         # اگر ایمیل باشه
