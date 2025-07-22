@@ -102,8 +102,42 @@ def signin_view (request):
              username = form.cleaned_data['username']
              contact = form.cleaned_data['contact']
              password = form.cleaned_data['password']
+def signin_view(request):
+    if request.method == 'POST':
+        form = signinForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data.get('email')
+            phone = form.cleaned_data.get('phone')
+            password = form.cleaned_data['password']
 
-             user = form.save(commit=False)
+            user = CustomUser(username=username, email=email, phone=phone)
+            user.set_password(password)
+            user.save()
+            if phone:
+                send_verification_sms(phone, "ثبت‌نام شما با موفقیت انجام شد.")
+            elif email:
+                send_mail(
+                    subject="ثبت‌نام موفق",
+                    message="ثبت‌نام شما با موفقیت انجام شد.",
+                    from_email="noreply@yourdomain.com",
+                    recipient_list=[email],
+                    fail_silently=True,
+                )
+
+            messages.success(request, 'ثبت‌نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید.')
+            return redirect('login')
+    else:
+        form = signinForm()
+
+    return render(request, 'user/sign_in.html', {'form': form})
+
+
+
+# اگر از مدل سفارشی User استفاده می‌کنی که رمز عبور رو هش می‌کنه (مثلاً با AbstractBaseUser یا AbstractUser)، هیچ‌وقت مستقیم password=form.cleaned_data['password'] نذار.
+# باید از user.set_password() استفاده کنی که هش کنه.
+
+
 
              if '@' in contact:
                  email = contact
