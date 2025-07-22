@@ -2,98 +2,115 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>ثبت‌نام</title>
+    <title>فرم ثبت‌نام</title>
     <style>
         body {
-            font-family: Tahoma, sans-serif;
-            background-color: #f9f9f9;
-            padding: 40px;
+            font-family: 'Vazir', Tahoma, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         form {
             background: #fff;
-            padding: 25px;
-            max-width: 400px;
-            margin: auto;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            width: 380px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            color: #333;
         }
 
         label {
-            display: block;
             margin-top: 15px;
+            font-weight: bold;
+            display: block;
         }
 
         input {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #ccc;
             box-sizing: border-box;
         }
 
         .error {
             color: red;
-            font-size: 14px;
-            margin-top: 10px;
+            font-size: 13px;
+            margin-top: 5px;
         }
 
         button {
-            margin-top: 20px;
             width: 100%;
+            margin-top: 20px;
             padding: 10px;
-            background-color: #28a745;
+            background-color: #007bff;
             color: white;
             font-size: 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #218838;
+            background-color: #0056b3;
+        }
+
+        .nonfield-error {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <form method="post">
-        {% csrf_token %}
-        <h2>ثبت‌نام</h2>
+<form method="post">
+    {% csrf_token %}
+    <h2>ثبت‌نام</h2>
 
-        {% if form.errors %}
-            <div class="error">
-                <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ field.label }}: {{ error }}</li>
-                    {% endfor %}
-                {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+    {% if form.non_field_errors %}
+        <div class="nonfield-error">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-        <label for="id_username">نام کاربری</label>
-        {{ form.username }}
+    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    {{ form.username }}
+    {% for error in form.username.errors %}
+        <div class="error">{{ error }}</div>
+    {% endfor %}
 
-        <label for="id_contact">ایمیل یا شماره موبایل</label>
-        {{ form.contact }}
+    <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label>
+    {{ form.contact }}
+    {% for error in form.contact.errors %}
+        <div class="error">{{ error }}</div>
+    {% endfor %}
 
-        <label for="id_password">رمز عبور</label>
-        {{ form.password }}
+    <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+    {{ form.password }}
+    {% for error in form.password.errors %}
+        <div class="error">{{ error }}</div>
+    {% endfor %}
 
-        <label for="id_confirm_password">تکرار رمز عبور</label>
-        {{ form.confirm_password }}
+    <label for="{{ form.confirm_password.id_for_label }}">{{ form.confirm_password.label }}</label>
+    {{ form.confirm_password }}
+    {% for error in form.confirm_password.errors %}
+        <div class="error">{{ error }}</div>
+    {% endfor %}
 
-        <button type="submit">ثبت‌نام</button>
-    </form>
+    <button type="submit">ثبت‌نام</button>
+</form>
 </body>
 </html>
-
-
 
