@@ -62,7 +62,7 @@
 <body>
     <div class="form-container">
         <h2>ورود به حساب</h2>
-        <form method="post">
+        <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
             {{ form.non_field_errors }}
 
@@ -77,9 +77,16 @@
             <label for="id_password">رمز عبور:</label>
             {{ form.password.errors }}
             {{ form.password }}
+            <p><a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور</a></p>
 
             <button type="submit">ورود</button>
         </form>
+            {% if messages %}
+                {% for message in messages %}
+                    <p style="color: red;">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
     </div>
 </body>
+
 </html>
