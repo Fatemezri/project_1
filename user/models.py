@@ -35,3 +35,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 
+
+class MassEmail(models.Model):
+    subject = models.CharField('عنوان',max_length=255)
+    html_message = models.TextField()
+    created_at = models.DateTimeField('زمان ارسال',auto_now_add=True)
+
+    class Meta:
+        verbose_name = ' ایمیل'
+        verbose_name_plural = 'ایمیل '
+
+
+    def __str__(self):
+        return self.subject
