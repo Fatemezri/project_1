@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 user = get_user_model()
 from django.core.exceptions import ValidationError
 from .models import CustomUser
+from .utils import upload_file_to_arvan
+from .utils import delete_file_from_arvan
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -134,3 +136,46 @@ class PasswordChangeForm(forms.Form):
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError("رمزهای عبور با هم مطابقت ندارند.")
         return cleaned_data
+
+
+
+class MediaFileAdminForm(forms.ModelForm):
+    upload = forms.FileField(required=False, label="آپلود فایل جدید")
+
+    class Meta:
+        model = MediaFile
+        fields = ['is_minified']
+
+    def save(self, commit=True):
+        upload_file = self.cleaned_data.get("upload")
+        is_minified = self.cleaned_data.get("is_minified")
+        instance = super().save(commit=False)
+
+        if upload_file:
+            if instance.pk and instance.file:
+                delete_file_from_arvan(instance.file.name)
+
+            if is_minified and upload_file.name.lower().endswith(('jpg', 'jpeg', 'png', 'webp')):
+                image = Image.open(upload_file)
+                buffer = BytesIO()
+                image = image.convert("RGB")
+                image.save(buffer, format='JPEG', quality=70)
+                buffer.seek(0)
+                upload_file = InMemoryUploadedFile(
+                    buffer,
+                    None,
+                    f"min_{upload_file.name}",
+                    'image/jpeg',
+                    buffer.getbuffer().nbytes,
+                    None
+                )
+
+            path = f"uploads/{upload_file.name}"
+            success = upload_file_to_arvan(upload_file, path)
+            if success:
+                instance.file.name = path
+
+        if commit:
+            instance.save()
+        return instance
+

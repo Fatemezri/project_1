@@ -48,3 +48,22 @@ class MassEmail(models.Model):
 
     def __str__(self):
         return self.subject
+
+
+class MediaFile(models.Model):
+    file = models.FileField(upload_to='uploads/', verbose_name="نام فایل")
+    is_minified = models.BooleanField(default=False, verbose_name="مینیفای")
+    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ آپلود")
+
+    def delete(self, *args, **kwargs):
+        from .utils import delete_file_from_arvan
+        if self.file:
+            delete_file_from_arvan(self.file.name)
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.file.name
+
+    class Meta:
+        verbose_name = 'فایل'
+        verbose_name_plural = 'فایل‌ها'
