@@ -1,20 +1,93 @@
-from django.contrib import admin
-from django.utils.html import format_html
+from django.contrib import  messages
+from django.core.mail import EmailMessage
+from .models import MassEmail
 from .models import MediaFile
 from .forms import MediaFileAdminForm
-from .utils import upload_file_to_arvan, delete_file_from_arvan, generate_presigned_url
-
-
-
+from .utils import delete_file_from_arvan, generate_presigned_url
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from import_export.admin import ExportMixin
+import os
+import io
+import arabic_reshaper
+from bidi.algorithm import get_display
+from django.http import HttpResponse
+from django.conf import settings
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from import_export import resources, fields
 from .models import CustomUser
-import jdatetime
 
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserResource(resources.ModelResource):
+    username = fields.Field(column_name='نام کاربری', attribute='تام کاربری')
+    phone = fields.Field(column_name='شماره همراه', attribute='phone')
+    email = fields.Field(column_name='ایمیل', attribute='email')
+    is_active = fields.Field(column_name='وضعیت فعال', attribute='is_active')
+    is_staff = fields.Field(column_name='نوع کاربر', attribute='is_staff')
+    date_joined = fields.Field(column_name='تاریخ عضویت', attribute='date_joined')
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'phone', 'email', 'is_active', 'is_staff', 'date_joined')
+        export_order = ('username', 'phone', 'email', 'is_active', 'is_staff', 'date_joined')
+
+    def dehydrate_is_active(self, user):
+        return "فعال" if user.is_active else "غیرفعال"
+
+    def dehydrate_is_staff(self, user):
+        return "ادمین" if user.is_staff else "کاربر عادی"
+
+
+
+
+
+def export_users_to_pdf(modeladmin, request, queryset):
+    buffer = io.BytesIO()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=users.pdf'
+
+    # ساخت canvas
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'Vazirmatn-Regular.ttf')
+    pdfmetrics.registerFont(TTFont("Vazir", font_path))
+    pdf.setFont("Vazir", 12)
+
+    y = 800
+    title = "لیست کاربران ثبت‌نام شده"
+    reshaped_title = arabic_reshaper.reshape(title)
+    bidi_title = get_display(reshaped_title)
+    pdf.drawRightString(550, y, bidi_title)
+    y -= 40
+
+    for user in queryset:
+        text = f"نام کاربری: {user.username} | ایمیل: {user.email or '-'} | شماره: {user.phone or '-'}"
+        reshaped_text = arabic_reshaper.reshape(text)
+        bidi_text = get_display(reshaped_text)
+        pdf.drawRightString(550, y, bidi_text)
+        y -= 25
+        if y < 50:
+            pdf.showPage()
+            pdf.setFont("Vazir", 12)
+            y = 800
+
+    pdf.save()
+    buffer.seek(0)
+    response.write(buffer.getvalue())
+    buffer.close()
+    return response
+
+export_users_to_pdf.short_description = "📄 خروجی PDF فارسی"
+
+
+
+# ✅ ادمین کاربر
+class CustomUserAdmin(ExportMixin, UserAdmin):
+    resource_class = CustomUserResource
+
     model = CustomUser
-
     list_display = (
         'username',
         'is_active',
@@ -22,14 +95,12 @@ class CustomUserAdmin(UserAdmin):
         'created_at',
         'updated_at',
     )
-
     readonly_fields = ('created_at', 'updated_at', 'slug')
 
     fieldsets = (
         (None, {
             'fields': ('username', 'email', 'phone', 'password')
         }),
-
         ('تاریخ‌ها و سیستم', {
             'fields': ('created_at', 'updated_at', 'slug'),
         }),
@@ -42,31 +113,12 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-    def get_jalali_created(self, obj):
-        if obj.created_at:
-            return jdatetime.datetime.fromgregorian(datetime=obj.created_at).strftime('%Y/%m/%d - %H:%M')
-        return "-"
-
-    def get_jalali_updated(self, obj):
-        if obj.updated_at:
-            return jdatetime.datetime.fromgregorian(datetime=obj.updated_at).strftime('%Y/%m/%d - %H:%M')
-        return "-"
-
-    get_jalali_created.short_description = 'تاریخ ثبت‌نام'
-    get_jalali_updated.short_description = 'آخرین بروزرسانی'
+    actions = [export_users_to_pdf]  # همچنین دکمه‌های اکسل هم اضافه می‌شن چون از ExportMixin استفاده کردیم
 
 
-    def get_jalali_updated(self, obj):
-        if obj.updated_at:
-            gregorian = obj.updated_at
-            jalali = jdatetime.datetime.fromgregorian(datetime=gregorian)
-            return jalali.strftime('%Y/%m/%d - %H:%M')
-        return "-"
-
-    get_jalali_created.short_description = 'تاریخ ثبت‌نام'
-    get_jalali_updated.short_description = 'آخرین بروزرسانی'
-
+# ✅ ثبت در پنل ادمین
 admin.site.register(CustomUser, CustomUserAdmin)
+
 
 
 class MassEmailAdmin(admin.ModelAdmin):
@@ -135,4 +187,8 @@ class MediaFileAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
 
-# Register your models here.
+
+admin.site.register(MediaFile, MediaFileAdmin)
+
+
+
