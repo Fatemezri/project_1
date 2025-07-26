@@ -61,8 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.rate_limit.RateLimitMiddleware',
-
+    'website.rate_limit.RateLimitMiddleware',
 
 ]
 
@@ -83,7 +82,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'project.website.wsgi.application'
+
 
 
 
@@ -169,6 +168,7 @@ SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
 
 
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGGING = {
@@ -209,14 +209,18 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'user': {  # این اسم در views.py استفاده میشه
+        'user': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
         },
+        'ratelimit': {
+            'handlers': ['file', 'errors'],  # اصلاح شد
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     }
 }
-
 
 
 
@@ -232,7 +236,10 @@ CELERY_TASK_SERIALIZER = 'json'
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # دیتابیس ۱
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
