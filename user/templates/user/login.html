@@ -1,92 +1,35 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <title>ورود به حساب کاربری</title>
-    <style>
-        body {
-            font-family: Tahoma, sans-serif;
-            background-color: #f4f4f4;
-            direction: rtl;
-            padding: 50px;
-        }
-        .form-container {
-            background-color: white;
-            max-width: 400px;
-            margin: auto;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
-        label {
-            font-weight: bold;
-            margin-top: 15px;
-            display: block;
-        }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-        .errorlist {
-            color: red;
-            font-size: 14px;
-            margin: 5px 0;
-            list-style: none;
-            padding: 0;
-        }
-        button {
-            margin-top: 20px;
-            background-color: #007bff;
-            color: white;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h2>ورود به حساب</h2>
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
+{% extends 'base.html' %}
 
-            <label for="id_username">نام کاربری:</label>
-            {{ form.username.errors }}
-            {{ form.username }}
+{% block title %}ورود به حساب کاربری{% endblock %}
 
-            <label for="id_contact">ایمیل یا شماره موبایل:</label>
-            {{ form.contact.errors }}
-            {{ form.contact }}
+{% block content %}
+  <div class="form-container">
+    <h2>ورود به حساب</h2>
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
 
-            <label for="id_password">رمز عبور:</label>
-            {{ form.password.errors }}
-            {{ form.password }}
-            <p><a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور</a></p>
+      <label for="id_username">نام کاربری:</label>
+      {{ form.username.errors }}
+      {{ form.username }}
 
-            <button type="submit">ورود</button>
-        </form>
-            {% if messages %}
-                {% for message in messages %}
-                    <p style="color: red;">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-    </div>
-</body>
+      <label for="id_contact">ایمیل یا شماره موبایل:</label>
+      {{ form.contact.errors }}
+      {{ form.contact }}
 
-</html>
+      <label for="id_password">رمز عبور:</label>
+      {{ form.password.errors }}
+      {{ form.password }}
+
+      <p><a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور</a></p>
+
+      <button type="submit">ورود</button>
+    </form>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p class="error">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endblock %}

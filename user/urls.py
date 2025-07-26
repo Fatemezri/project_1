@@ -1,5 +1,10 @@
+from tkinter.font import names
+
 from django.urls import path
-from .views import login_view, confirm_login_link_view, send_login_link_view,signin_view, home
+from .views import login_view, password_reset_link_view, send_login_link_view,signin_view, home,\
+    PasswordReset_email_view,user_profile_view,\
+    PasswordReset_email_view,password_reset_link_view,confirm_login_link_view,verify_phone_view,\
+    verify_reset_code_view,password_reset_confirm_view
 
 
 urlpatterns = [
@@ -13,6 +18,9 @@ urlpatterns = [
     path('reset/<str:token>/', password_reset_link_view, name='password-reset'),
     path('login-confirm/<str:token>/', confirm_login_link_view, name='confirm-login-link'),
     path('verify-phone/', verify_phone_view, name='verify-phone'),
+    path('password/verify-code/', verify_reset_code_view, name='password-verify-code'),
+    path('password/verify_reset_code', verify_reset_code_view, name= 'verify_reset_code'),
+    path('password/reset/confirm/', password_reset_confirm_view, name='password-reset-confirm')
 
 ]
 

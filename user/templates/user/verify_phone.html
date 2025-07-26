@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}تأیید شماره تلفن{% endblock %}
+
+{% block content %}
+  <h2>تأیید شماره تماس</h2>
+  <p>کد دریافتی را وارد کنید تا شماره شما تأیید شود</p>
+  <form method="post">
+    {% csrf_token %}
+    <input type="text" name="code" placeholder="کد تأیید">
+    <button type="submit">تأیید</button>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </form>
+{% endblock %}
+

@@ -9,26 +9,28 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+from decouple import config
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+
+
+from django.conf.global_settings import EMAIL_BACKEND
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z&6ogd6tc_hzc@ult%(yp1m5your%cx$wdo^z5ogcxxmkpvifl'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
-# Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,11 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'admin',
     'user',
     'sms',
     'Email',
-    'comment',
+    'comments',
+    'jdatetime',
+    'django_jalali',
+    'django_ckeditor_5',
+    'storages',
+    'django_celery_results',
+    'django_celery_beat',
+    'notification',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +61,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.rate_limit.RateLimitMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -71,7 +83,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'website.wsgi.application'
+WSGI_APPLICATION = 'project.website.wsgi.application'
+
 
 
 # Database
@@ -109,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'fa'
 
-TIME_ZONE = 'Asia/Tehran'
+TIME_ZONE =  'Africa/Khartoum'
 
 USE_I18N = True
 
@@ -121,12 +134,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
@@ -135,12 +151,88 @@ AUTHENTICATION_BACKENDS = [
 
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'lcoi hhoj vmdt xhlx'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
 
 # توکن امن با نصب پکیج itsdangerous
+
+
+SMS_IR_API_KEY = os.getenv("SMS_IR_API_KEY")
+SMS_IR_LINE_NUMBER = os.getenv("SMS_IR_LINE_NUMBER")
+SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
+
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} ({name}) ▶ {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}: {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'errors'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'user': {  # این اسم در views.py استفاده میشه
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
+
+
+
+
+ARVAN_ACCESS_KEY = config("ARVAN_ACCESS_KEY")
+ARVAN_SECRET_KEY = config("ARVAN_SECRET_KEY")
+ARVAN_BUCKET = config("ARVAN_BUCKET")
+ARVAN_ENDPOINT = config("ARVAN_ENDPOINT")
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}

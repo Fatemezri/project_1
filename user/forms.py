@@ -1,10 +1,23 @@
-from django import forms
+
+
 from django.contrib.auth import get_user_model
 user = get_user_model()
 from django.core.exceptions import ValidationError
 from .models import CustomUser
+from django import forms
+from django.core.validators import validate_email
+import re
+from django import forms
+from .models import MediaFile
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+# در forms.py یا admin.py
 from .utils import upload_file_to_arvan
 from .utils import delete_file_from_arvan
+
+
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -42,7 +55,7 @@ class LoginForm(forms.Form):
         if re.match(r'^09\d{9}$', contact):
             return contact
 
-        raise forms.ValidationError("شماره موبایل معتبر نیست.")
+        raise forms.ValidationError("شماره موبایل/ایمیل معتبر نیست.")
 
 
 class signinForm(forms.ModelForm):
@@ -71,20 +84,20 @@ class signinForm(forms.ModelForm):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm = cleaned_data.get("confirm_password")
-
-        if password != confirm:
-            raise ValidationError("رمز عبور و تکرار آن یکسان نیستند.")
-
         contact = cleaned_data.get("contact")
+
+        if password and confirm and password != confirm:
+            raise ValidationError("رمز عبور و تکرار آن یکسان نیستند")
+
         if contact:
             if '@' in contact:
                 cleaned_data['email'] = contact
                 cleaned_data['phone'] = None
-            elif contact.isdigit():
+            elif re.match(r'^09\d{9}$', contact):  # شماره موبایل ایرانی
                 cleaned_data['phone'] = contact
                 cleaned_data['email'] = None
             else:
-                raise ValidationError("ایمیل یا شماره همراه معتبر نیست.")
+                raise ValidationError("ایمیل یا شماره همراه معتبر نیست")
         return cleaned_data
 
 
@@ -117,7 +130,6 @@ class passwordResetForm(forms.Form):
         raise ValidationError("ایمیل یا شماره همراه معتبر نیست.")
 
 
-from django import forms
 
 class PasswordChangeForm(forms.Form):
     new_password = forms.CharField(
@@ -139,12 +151,52 @@ class PasswordChangeForm(forms.Form):
 
 
 
+from django import forms
+from .models import MediaFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
+from PIL import Image
+from .utils import upload_file_to_arvan, delete_file_from_arvan
+
+
 class MediaFileAdminForm(forms.ModelForm):
     upload = forms.FileField(required=False, label="آپلود فایل جدید")
 
     class Meta:
         model = MediaFile
         fields = ['is_minified']
+
+    def recursive_minify(self, image_file, max_kb=300):
+        image = Image.open(image_file)
+        image = image.convert("RGB")
+        qualities = (85, 40, 10)
+
+        for q in qualities:
+            buffer = BytesIO()
+            image.save(buffer, format='JPEG', quality=q)
+            size_kb = buffer.getbuffer().nbytes / 1024
+
+            if size_kb <= max_kb:
+                buffer.seek(0)
+                return InMemoryUploadedFile(
+                    buffer,
+                    None,
+                    f"min_{getattr(image_file, 'name', 'image.jpg')}",
+                    'image/jpeg',
+                    buffer.getbuffer().nbytes,
+                    None
+                )
+
+        # اگر هنوز بزرگ بود، آخرین نسخه رو برمی‌گردونه
+        buffer.seek(0)
+        return InMemoryUploadedFile(
+            buffer,
+            None,
+            f"min_{getattr(image_file, 'name', 'image.jpg')}",
+            'image/jpeg',
+            buffer.getbuffer().nbytes,
+            None
+        )
 
     def save(self, commit=True):
         upload_file = self.cleaned_data.get("upload")
@@ -155,20 +207,9 @@ class MediaFileAdminForm(forms.ModelForm):
             if instance.pk and instance.file:
                 delete_file_from_arvan(instance.file.name)
 
+            # اگر تصویر است و گزینه مینیفای فعال باشد:
             if is_minified and upload_file.name.lower().endswith(('jpg', 'jpeg', 'png', 'webp')):
-                image = Image.open(upload_file)
-                buffer = BytesIO()
-                image = image.convert("RGB")
-                image.save(buffer, format='JPEG', quality=70)
-                buffer.seek(0)
-                upload_file = InMemoryUploadedFile(
-                    buffer,
-                    None,
-                    f"min_{upload_file.name}",
-                    'image/jpeg',
-                    buffer.getbuffer().nbytes,
-                    None
-                )
+                upload_file = self.recursive_minify(upload_file)
 
             path = f"uploads/{upload_file.name}"
             success = upload_file_to_arvan(upload_file, path)
@@ -178,4 +219,5 @@ class MediaFileAdminForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
 

@@ -1,6 +1,8 @@
 from django.db import models
+from django.utils.text import slugify
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
+from django_jalali.db import models as jmodels
+from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
@@ -23,16 +25,33 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField( 'ایمیل',unique=True, null=True, blank=True) # unique:ایمیل تکراری نباشه null:فیلد میتونه خالی باشه blanck: فرم میتونه خالی باشه
     phone = models.CharField( 'شماره همراه',max_length=20, unique=True, null=True, blank=True)
     is_active = models.BooleanField( 'فعال',default=True)
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت‌نام", null=True)
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name="آخرین بروزرسانی", null=True)
     is_staff = models.BooleanField('ادمین',default=False)
-
+    slug = models.SlugField(unique=True, blank=True, null=False)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'  # هنوز برای createsuperuser لازمه
     REQUIRED_FIELDS = ['email']  # برای ساختن ادمین
 
+    class Meta:
+        verbose_name = 'کاربر'
+        verbose_name_plural = 'کاربرها'
+
     def __str__(self):
         return self.username
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.username)
+            slug = base_slug
+            counter = 1
+            while CustomUser.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+
+        super().save(*args, **kwargs)
 
 
 

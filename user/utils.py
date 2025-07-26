@@ -1,17 +1,46 @@
 from itsdangerous import URLSafeTimedSerializer
 from django.conf import settings
+from sms_ir import SmsIr
+import boto3
+from django.conf import settings
+from botocore.exceptions import ClientError
+import logging
+
 
 def generate_token(email):
     serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
     return serializer.dumps(email, salt='email-confirmation')
 
-def verify_token(token, max_age=120):
+def verify_token(token, max_age=60):
     serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
     try:
-        email = serializer.loads(token, salt='email-confirmation', max_age=max_age)
-        return email
+        return serializer.loads(token, salt='email-confirmation', max_age=max_age)
     except Exception:
         return None
+
+
+
+def send_verification_sms(phone_number, code):
+    # شماره باید با 09 شروع شود و 11 رقمی باشد
+    if phone_number.startswith('0') and len(phone_number) == 11:
+        sms_ir = SmsIr(
+            api_key=settings.SMS_IR_API_KEY,
+            linenumber=settings.SMS_IR_LINE_NUMBER
+        )
+        template_id = settings.SMS_IR_TEMPLATE_ID
+        parameters = [{"name": "code", "value": code}]
+
+        try:
+            sms_ir.send_verify_code(phone_number, template_id, parameters)
+            print(f"کد تأیید {code} با موفقیت به شماره {phone_number} ارسال شد.")
+        except Exception as e:
+            print("خطا در ارسال پیامک:", e)
+            raise e
+    else:
+        print("شماره موبایل نامعتبر است:", phone_number)
+        raise ValueError("شماره موبایل نامعتبر است.")
+
+
 
 session = boto3.session.Session()
 client = session.client(

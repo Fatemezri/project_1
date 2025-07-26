@@ -1,83 +1,25 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <title>پروفایل کاربر</title>
-    <style>
-        body {
-            font-family: Tahoma;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+{% extends 'base.html' %}
 
-        .profile-box {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 360px;
-        }
+{% block title %}پروفایل کاربر{% endblock %}
 
-        .profile-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-info {
-            margin: 15px 0;
-            font-size: 16px;
-            line-height: 1.8;
-        }
-
-        .label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .value {
-            color: #333;
-        }
-
-        .btn-logout {
-            margin-top: 20px;
-            display: block;
-            text-align: center;
-            background-color: #dc3545;
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            border-radius: 6px;
-        }
-
-        .btn-logout:hover {
-            background-color: #c82333;
-        }
-    </style>
-</head>
-<body>
-    <div class="profile-box">
-        <h2>پروفایل کاربر</h2>
-        <div class="profile-info">
-            <span class="label">نام کاربری: </span>
-            <span class="value">{{ user_profile.username }}</span>
-        </div>
-        {% if user_profile.email %}
-        <div class="profile-info">
-            <span class="label">ایمیل: </span>
-            <span class="value">{{ user_profile.email }}</span>
-        </div>
-        {% endif %}
-        {% if user_profile.phone %}
-        <div class="profile-info">
-            <span class="label">شماره موبایل: </span>
-            <span class="value">{{ user_profile.phone }}</span>
-        </div>
-        {% endif %}
-
-
+{% block content %}
+  <div class="profile-box">
+    <h2>پروفایل کاربر</h2>
+    <div class="profile-info">
+      <span class="label">نام کاربری: </span>
+      <span class="value">{{ user_profile.username }}</span>
     </div>
-</body>
-</html>
+    {% if user_profile.email %}
+      <div class="profile-info">
+        <span class="label">ایمیل: </span>
+        <span class="value">{{ user_profile.email }}</span>
+      </div>
+    {% endif %}
+    {% if user_profile.phone %}
+      <div class="profile-info">
+        <span class="label">شماره موبایل: </span>
+        <span class="value">{{ user_profile.phone }}</span>
+      </div>
+    {% endif %}
+      </div>
+{% endblock %}
