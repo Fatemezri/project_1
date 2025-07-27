@@ -15,6 +15,15 @@ from .forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import CustomUser
+from .utils import verify_token
+from django.contrib.auth import login
+from django.conf import settings
+from django.contrib.auth import login, get_backends
+
+
+def index(request):
+    return render(request, 'user\index.html')
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -49,7 +58,7 @@ def login_view(request):
                 send_mail(
                     'لینک ورود به حساب',
                     f'برای ورود روی این لینک کلیک کنید:\n{login_link}',
-                    'noreply@example.com',
+                    'zarei.fateme937@gmail.com',
                     [user.email]
                 )
 
@@ -101,9 +110,7 @@ def send_login_link_view(request):
             return render(request, 'user/send_link.html', {'error': 'ایمیل پیدا نشد.'})
     return render(request, 'user/send_link.html')
 
-from .utils import verify_token
 
-from django.contrib.auth import login
 
 def confirm_login_link_view(request, token):
     email = verify_token(token)
@@ -113,6 +120,7 @@ def confirm_login_link_view(request, token):
 
     try:
         user = CustomUser.objects.get(email=email)
+        user.backend = settings.AUTHENTICATION_BACKENDS[0]
         login(request, user)
 
         return redirect('home')
