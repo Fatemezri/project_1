@@ -1,35 +1,57 @@
 {% extends 'base.html' %}
-
+{% load socialaccount %}
 {% block title %}ورود به حساب کاربری{% endblock %}
 
 {% block content %}
-  <div class="form-container">
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
     <h2>ورود به حساب</h2>
-    <form method="post" action="{% url 'login' %}">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
 
-      <label for="id_username">نام کاربری:</label>
-      {{ form.username.errors }}
-      {{ form.username }}
+    {% if form.non_field_errors %}
+      <div class="nonfield-error">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
 
-      <label for="id_contact">ایمیل یا شماره موبایل:</label>
-      {{ form.contact.errors }}
-      {{ form.contact }}
+    <label for="{{ form.username.id_for_label }}">نام کاربری:</label>
+    {{ form.username }}
+    {% for error in form.username.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
 
-      <label for="id_password">رمز عبور:</label>
-      {{ form.password.errors }}
-      {{ form.password }}
+    <label for="{{ form.contact.id_for_label }}">ایمیل یا شماره موبایل:</label>
+    {{ form.contact }}
+    {% for error in form.contact.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
 
-      <p><a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور</a></p>
+    <label for="{{ form.password.id_for_label }}">رمز عبور:</label>
+    {{ form.password }}
+    {% for error in form.password.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
 
-      <button type="submit">ورود</button>
-    </form>
+    <p style="margin-top: 10px;">
+      <a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور؟</a>
+    </p>
+
+    <button type="submit">ورود</button>
+
+    <a href="{% provider_login_url 'google' %}">
+      <button type="button" style="margin-top: 10px; background-color: #db4437;">
+        ورود با گوگل
+      </button>
+    </a>
+
+    <p style="text-align:center; margin-top: 10px;">
+      هنوز حساب ندارید؟
+      <a href="{% url 'signin' %}">ثبت‌نام کنید</a>
+    </p>
 
     {% if messages %}
       {% for message in messages %}
         <p class="error">{{ message }}</p>
       {% endfor %}
     {% endif %}
-  </div>
+  </form>
 {% endblock %}

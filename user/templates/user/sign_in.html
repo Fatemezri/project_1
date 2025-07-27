@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load socialaccount %}
 {% block title %}ثبت‌نام{% endblock %}
 
 {% block content %}
@@ -40,6 +40,16 @@
     {% endfor %}
 
     <button type="submit">ثبت‌نام</button>
+
+    <a href="{% provider_login_url 'google' %}">
+      <button type="button" style="margin-top: 10px; background-color: #db4437;">
+        ثبت‌نام با گوگل
+      </button>
+    </a>
+
+    <p style="text-align:center; margin-top: 10px;">
+      قبلاً ثبت‌نام کرده‌اید؟
+      <a href="{% url 'login' %}">وارد شوید</a>
+    </p>
   </form>
 {% endblock %}
-
