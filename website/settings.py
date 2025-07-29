@@ -98,9 +98,6 @@ TEMPLATES = [
 
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -109,8 +106,6 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -128,8 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
 
 LANGUAGE_CODE = 'fa'
 
@@ -142,8 +136,6 @@ USE_L10N= True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -151,8 +143,6 @@ STATICFILES_DIRS = [
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 
 AUTH_USER_MODEL = 'user.CustomUser'
@@ -164,15 +154,14 @@ AUTHENTICATION_BACKENDS = [
 
 
 
-# Google credentials (این‌ها را از کنسول گوگل دریافت می‌کنی)
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '785850410686-s2cqejfs3fklu2t89t68u3udbv8o4ekt.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'July 26, 2025 at 4:12:54 PM GMT+3'
+
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = '/home/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+
 
 
 # فعالسازی pipeline پیش‌فرض
@@ -253,7 +242,7 @@ LOGGING = {
             'propagate': True,
         },
         'ratelimit': {
-            'handlers': ['file', 'errors'],  # اصلاح شد
+            'handlers': ['file', 'errors'],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -275,7 +264,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  # دیتابیس ۱
+        "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
