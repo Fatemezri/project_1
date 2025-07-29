@@ -166,9 +166,9 @@ AUTHENTICATION_BACKENDS = [
 
 # Google credentials (این‌ها را از کنسول گوگل دریافت می‌کنی)
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '785850410686-s2cqejfs3fklu2t89t68u3udbv8o4ekt.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'July 26, 2025 at 4:12:54 PM GMT+3'
 
-# مسیر بازگشت بعد از لاگین موفق
+
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/home/'
@@ -284,13 +284,29 @@ CACHES = {
 
 
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_USERNAME_REQUIRED = False
+
+LOGIN_REDIRECT_URL = "/home"
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
     }
 }
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+
+
