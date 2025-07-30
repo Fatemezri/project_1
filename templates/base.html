@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}عنوان صفحه{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  {% block extra_css %}{% endblock %}
+  <style>
+    body {
+        font-family: 'Vazir', Tahoma, sans-serif;
+        background-color: #f5f7fa;
+        padding: 2rem;
+        direction: rtl;
+    }
+    form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 400px;
+        margin: 2rem auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    label {
+        margin-top: 15px;
+        font-weight: bold;
+        display: block;
+    }
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    .error {
+        color: red;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    .nonfield-error {
+        color: red;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .messages {
+        margin-top: 10px;
+        list-style: none;
+        padding: 0;
+    }
+    .messages li {
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+    .messages li.success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .messages li.error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  {% block content %}{% endblock %}
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

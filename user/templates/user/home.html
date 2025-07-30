@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}خانه{% endblock %}
+
+{% block content %}
+  <div class="container">
+
+    <h2>خوش آمدید {{ request.user.username }}</h2>
+    <p>برای مشاهده پروفایل خود روی دکمه زیر کلیک کنید:</p>
+    <a href="{% url 'profile' request.user.slug %}" class="button">پروفایل من</a>
+
+    <hr>
+
+    <!-- نمایش پیام‌های سیستم -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="padding: 10px; background-color: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 15px;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- فرم ارسال کامنت -->
+    <h3>ارسال نظر</h3>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="button">ارسال</button>
+    </form>
+
+    <hr>
+
+    <!-- لیست کامنت‌های تأیید شده -->
+    <h3>نظرات کاربران</h3>
+    {% if comments %}
+      <ul>
+        {% for comment in comments %}
+          <li style="margin-bottom: 20px;">
+            <strong>{{ comment.user.username }}</strong>
+            <p>{{ comment.content }}</p>
+            <small>{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>هنوز نظری ثبت نشده است.</p>
+    {% endif %}
+
+  </div>
+{% endblock %}

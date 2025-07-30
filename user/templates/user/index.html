@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}صفحه اصلی{% endblock %}
+
+{% block content %}
+  <form>
+    <h2>خوش آمدید!</h2>
+    <a href="{% url 'login' %}">
+      <button type="button">ورود</button>
+    </a>
+    <a href="{% url 'signin' %}">
+      <button type="button">ثبت‌نام</button>
+    </a>
+  </form>
+{% endblock %}

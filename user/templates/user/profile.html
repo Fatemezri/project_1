@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}پروفایل کاربر{% endblock %}
+
+{% block content %}
+  <div class="profile-box">
+    <h2>پروفایل کاربر</h2>
+    <div class="profile-info">
+      <span class="label">نام کاربری: </span>
+      <span class="value">{{ user_profile.username }}</span>
+    </div>
+    {% if user_profile.email %}
+      <div class="profile-info">
+        <span class="label">ایمیل: </span>
+        <span class="value">{{ user_profile.email }}</span>
+      </div>
+    {% endif %}
+    {% if user_profile.phone %}
+      <div class="profile-info">
+        <span class="label">شماره موبایل: </span>
+        <span class="value">{{ user_profile.phone }}</span>
+      </div>
+    {% endif %}
+      </div>
+{% endblock %}

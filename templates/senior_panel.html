@@ -1,0 +1,13 @@
+<h2>Senior User Panel</h2>
+
+<h3>Notifications</h3>
+<ul>
+  {% for n in request.user.notification_set.all %}
+    <li>{{ n.message }} - {{ n.created_at }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Reports</h3>
+{% for report in reports %}
+  <p>{{ report.content }} from {{ report.admin.username }}</p>
+{% endfor %}
