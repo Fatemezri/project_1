@@ -1,5 +1,3 @@
-from tkinter.font import names
-
 from django.urls import path
 from .views import login_view, password_reset_link_view, send_login_link_view,signin_view, \
     PasswordReset_email_view,user_profile_view,\
@@ -24,4 +22,5 @@ urlpatterns = [
     path('password/reset/confirm/', password_reset_confirm_view, name='password-reset-confirm')
 
 ]
+
 
