@@ -25,7 +25,7 @@ from comments.models import Comment
 
 
 def index(request):
-    return render(request, 'user\index.html')
+    return render(request, 'user/index.html')
 
 
 def login_view(request):
