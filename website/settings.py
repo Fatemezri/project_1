@@ -207,6 +207,8 @@ SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGGING = {
+
+
     'version': 1,
     'disable_existing_loggers': False,
 
