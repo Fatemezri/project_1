@@ -1,10 +1,10 @@
 from tkinter.font import names
 
 from django.urls import path
-from .views import login_view, password_reset_link_view, send_login_link_view,signin_view, home,\
+from .views import login_view, password_reset_link_view, send_login_link_view,signin_view, \
     PasswordReset_email_view,user_profile_view,\
     PasswordReset_email_view,password_reset_link_view,confirm_login_link_view,verify_phone_view,\
-    verify_reset_code_view,password_reset_confirm_view,index
+    home,verify_reset_code_view,password_reset_confirm_view,index
 
 
 urlpatterns = [

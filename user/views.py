@@ -13,12 +13,15 @@ from .utils import generate_token,  send_verification_sms
 import random
 from .forms import PasswordChangeForm
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from .models import CustomUser
 from .utils import verify_token
-from django.contrib.auth import login
 from django.conf import settings
-from django.contrib.auth import login, get_backends
+from django.contrib.auth import login
+from comments.forms import CommentForm
+from comments.models import Comment
+
+
+
 
 
 def index(request):
@@ -199,9 +202,31 @@ def signin_view(request):
 # باید از user.set_password() استفاده کنی که هش کنه.
 
 
+from django.contrib import messages
 
 def home(request):
-    return render(request,'user/home.html')
+    form = CommentForm()
+    comments = Comment.objects.filter(approved=True).order_by('-created_at')
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            if request.user.is_authenticated:
+                comment.user = request.user
+            else:
+                return redirect('login')
+            comment.save()
+            messages.success(request, "✅ کامنت شما با موفقیت ثبت شد و پس از تأیید نمایش داده خواهد شد.")
+            return redirect('home')
+
+    return render(request, 'user/home.html', {
+        'form': form,
+        'comments': comments
+    })
+
+
+
 
 
 # فرم درخواست بازیابی رمز عبور (شماره یا ایمیل)
@@ -319,6 +344,7 @@ def verify_phone_view(request):
         if code == otp_code:
             try:
                 user = User.objects.get(id=user_id)
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
                 login(request, user)
 
                 # پاک‌سازی امن session

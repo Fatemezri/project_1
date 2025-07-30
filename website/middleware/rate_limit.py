@@ -1,12 +1,12 @@
+from django.http import JsonResponse
 import time
 from django.core.cache import cache
-from django.http import JsonResponse
 
 class RateLimitMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.rate_limit = 30        # حداکثر تعداد درخواست
-        self.time_window = 300      # بازه زمانی برحسب ثانیه (۵ دقیقه)
+        self.time_window = 120      # مدت زمان مسدودی به ثانیه (مثلاً ۲ دقیقه)
 
     def __call__(self, request):
         ip = self.get_client_ip(request)
@@ -14,12 +14,14 @@ class RateLimitMiddleware:
         request_times = cache.get(cache_key, [])
 
         now = time.time()
+        # فقط درخواست‌هایی که هنوز در بازه‌ی زمانی هستند را نگه می‌داریم
         request_times = [t for t in request_times if now - t < self.time_window]
 
         if len(request_times) >= self.rate_limit:
             return JsonResponse(
-                {"detail": "rrrrrrrrrrrrrrrrr"},
-                status=429
+                {"detail": "شما به دلیل درخواست‌های زیاد، برای ۲ دقیقه مسدود شده‌اید."},
+                status=429,
+                json_dumps_params={'ensure_ascii': False}  # 👈 مهم برای نمایش درست فارسی
             )
 
         request_times.append(now)
@@ -33,3 +35,4 @@ class RateLimitMiddleware:
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
+

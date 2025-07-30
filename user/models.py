@@ -5,6 +5,7 @@ from django_jalali.db import models as jmodels
 from django.db import models
 
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email=None, phone=None, password=None, **extra_fields):
         if not email and not phone:
@@ -20,39 +21,30 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(username, email=email, password=password, **extra_fields)
 
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('نام کاربر', max_length=30, unique=True)
-    email = models.EmailField( 'ایمیل',unique=True, null=True, blank=True) # unique:ایمیل تکراری نباشه null:فیلد میتونه خالی باشه blanck: فرم میتونه خالی باشه
-    phone = models.CharField( 'شماره همراه',max_length=20, unique=True, null=True, blank=True)
-    is_active = models.BooleanField( 'فعال',default=True)
+    email = models.EmailField('ایمیل', unique=True, null=True,
+                              blank=True)  # unique: no duplicates, null: DB can store NULL, blank: form allows empty
+    phone = models.CharField('شماره همراه', max_length=20, unique=True, null=True, blank=True)
+    is_active = models.BooleanField('فعال', default=True)
     created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت‌نام", null=True)
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name="آخرین بروزرسانی", null=True)
-    is_staff = models.BooleanField('ادمین',default=False)
-    slug = models.SlugField(unique=True, blank=True, null=False)
+    is_staff = models.BooleanField('ادمین', default=False)
+    slug = models.SlugField(unique=True, blank=True)  # null=False by default, better to omit it explicitly
+
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'username'  # هنوز برای createsuperuser لازمه
-    REQUIRED_FIELDS = ['email']  # برای ساختن ادمین
-
-    class Meta:
-        verbose_name = 'کاربر'
-        verbose_name_plural = 'کاربرها'
-
-    def __str__(self):
-        return self.username
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']  # customize as you need
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.username)
-            slug = base_slug
-            counter = 1
-            while CustomUser.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = slug
-
+        # Optional: auto-generate slug if empty
+        if not self.slug and self.username:
+            from django.utils.text import slugify
+            self.slug = slugify(self.username)
         super().save(*args, **kwargs)
-
 
 
 class MassEmail(models.Model):
