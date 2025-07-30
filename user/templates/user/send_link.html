@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}ارسال لینک ورود{% endblock %}
+
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    <input type="email" name="email" placeholder="ایمیل شما" required>
+    <button type="submit">ارسال لینک ورود</button>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+  </form>
+{% endblock %}

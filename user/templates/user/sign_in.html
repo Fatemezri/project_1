@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block title %}ثبت‌نام{% endblock %}
+
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    <h2>ثبت‌نام</h2>
+
+    {% if form.non_field_errors %}
+      <div class="nonfield-error">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    {{ form.username }}
+    {% for error in form.username.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label>
+    {{ form.contact }}
+    {% for error in form.contact.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+    {{ form.password }}
+    {% for error in form.password.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    <label for="{{ form.confirm_password.id_for_label }}">{{ form.confirm_password.label }}</label>
+    {{ form.confirm_password }}
+    {% for error in form.confirm_password.errors %}
+      <div class="error">{{ error }}</div>
+    {% endfor %}
+
+    <button type="submit">ثبت‌نام</button>
+
+    <a href="{% provider_login_url 'google' %}">
+      <button type="button" style="margin-top: 10px; background-color: #db4437;">
+        ثبت‌نام با گوگل
+      </button>
+    </a>
+
+    <p style="text-align:center; margin-top: 10px;">
+      قبلاً ثبت‌نام کرده‌اید؟
+      <a href="{% url 'login' %}">وارد شوید</a>
+    </p>
+  </form>
+{% endblock %}
