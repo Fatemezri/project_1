@@ -65,9 +65,10 @@ def login_view(request):
                     [user.email]
                 )
 
+                logger.info(f"📧 لینک ورود به ایمیل {user.email} ارسال شد.")
                 messages.success(request, 'لینک ورود به ایمیل شما ارسال شد.')
                 return redirect('login')
-                logger.info(f"📧 لینک ورود به ایمیل {user.email} ارسال شد.")
+
             # اگر شماره باشد
             else:
                 code = str(random.randint(100000, 999999))
@@ -243,7 +244,7 @@ def PasswordReset_email_view(request):
                     send_mail(
                         subject='بازیابی رمز عبور',
                         message=f'برای تغییر رمز عبور روی لینک کلیک کنید:\n{reset_link}',
-                        from_email='noreply@example.com',
+                        from_email='zarei.fateme937@gmai.com',
                         recipient_list=[user.email]
                     )
                     messages.success(request, "لینک تغییر رمز به ایمیل شما ارسال شد.")
