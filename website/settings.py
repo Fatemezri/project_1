@@ -145,9 +145,7 @@ USE_TZ = True
 
 
 
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",
-# ]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = 'static/'
@@ -267,22 +265,22 @@ ARVAN_SECRET_KEY = config("ARVAN_SECRET_KEY")
 ARVAN_BUCKET = config("ARVAN_BUCKET")
 ARVAN_ENDPOINT = config("ARVAN_ENDPOINT")
 
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-#         "LOCATION": "unique-snowflake",
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",  # دیتابیس ۱
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # دیتابیس ۱
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
@@ -310,4 +308,4 @@ REDIS_DB = 0
 
 TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 
-
+AUTH_USER_MODEL = 'user.CustomUser'
