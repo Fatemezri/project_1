@@ -61,10 +61,11 @@ def login_view(request):
                 login_link = request.build_absolute_uri(reverse('confirm-login-link', args=[token]))
 
                 send_mail(
-                    'عنوان ایمیل',
-                    'متن ایمیل...',
-                    settings.DEFAULT_FROM_EMAIL,  # ✅ اتوماتیک از settings.py می‌خونه
-                    [user.email],
+                    subject='لینک ورود',
+                    message=f'سلام {user.username}!\nبرای ورود به حساب کاربری خود، روی لینک زیر کلیک کنید:\n{login_link}',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False
                 )
 
                 logger.info(f"📧 Login link sent to email: {user.email}")
