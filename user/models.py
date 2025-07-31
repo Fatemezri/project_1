@@ -25,8 +25,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('نام کاربر', max_length=30, unique=True)
-    email = models.EmailField('ایمیل', unique=True, null=True,
-                              blank=True)  # unique: no duplicates, null: DB can store NULL, blank: form allows empty
+    email = models.EmailField('ایمیل', unique=True, null=True,blank=True)  # unique: no duplicates, null: DB can store NULL, blank: form allows empty
     phone = models.CharField('شماره همراه', max_length=20, unique=True, null=True, blank=True)
     is_active = models.BooleanField('فعال', default=True)
     created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت‌نام", null=True)
@@ -38,6 +37,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']  # customize as you need
+
+
+    class Meta:
+        verbose_name = 'کاربر'
+        verbose_name_plural = 'کاربرها '
 
     def save(self, *args, **kwargs):
         # Optional: auto-generate slug if empty
