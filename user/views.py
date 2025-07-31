@@ -19,6 +19,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from comments.forms import CommentForm
 from comments.models import Comment
+from django.contrib import messages
 
 
 
@@ -30,7 +31,7 @@ def index(request):
 
 def login_view(request):
     if request.method == 'POST':
-        logger.info("📥 فرم ورود ارسال شد.")
+        logger.info("📥 Login form submitted.")
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -42,18 +43,17 @@ def login_view(request):
                     user = User.objects.get(username=username, email=contact)
                 else:
                     user = User.objects.get(username=username, phone=contact)
-                    logger.info(f"👤 کاربر پیدا شد: {user.username}")
+                    logger.info(f"👤 User found: {user.username}")
             except User.DoesNotExist:
-                logger.warning(f"❌ کاربر با مشخصات ({contact}) یافت نشد.")
+                logger.warning(f"❌ No user found with contact: {contact}")
                 messages.error(request, 'کاربری با این مشخصات یافت نشد.')
                 return redirect('login')
 
             if not check_password(password, user.password):
-                logger.warning(f"🔑 رمز عبور اشتباه برای کاربر {username}")
+                logger.warning(f"🔑 Incorrect password for user {username}")
                 messages.error(request, 'رمز عبور اشتباه است.')
                 return redirect('login')
 
-            # اگر ایمیل باشد
             if '@' in contact:
                 token = generate_token(user.email)
                 login_link = request.build_absolute_uri(reverse('confirm-login-link', args=[token]))
@@ -65,16 +65,15 @@ def login_view(request):
                     [user.email]
                 )
 
-                logger.info(f"📧 لینک ورود به ایمیل {user.email} ارسال شد.")
+                logger.info(f"📧 Login link sent to email: {user.email}")
                 messages.success(request, 'لینک ورود به ایمیل شما ارسال شد.')
                 return redirect('login')
 
-            # اگر شماره باشد
             else:
                 code = str(random.randint(100000, 999999))
                 request.session['otp_code'] = code
                 request.session['otp_user_id'] = user.id
-                logger.info(f"📲 کد تأیید به شماره {user.phone} ارسال شد.")
+                logger.info(f"📲 Verification code sent to phone: {user.phone}")
 
                 try:
                     send_verification_sms(user.phone, code)
@@ -87,7 +86,6 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, 'user/login.html', {'form': form})
-
 
 
 
@@ -107,13 +105,12 @@ def send_login_link_view(request):
                 from_email=None,
                 recipient_list=[email],
             )
+            logger.info(f"📧 Login link sent to {email}.")
             return render(request, 'user/email_sent.html')
-            logger.info(f"📧 لینک ورود برای {email} ارسال شد.")
         except User.DoesNotExist:
-            logger.warning(f"❌ کاربری با ایمیل {email} پیدا نشد.")
+            logger.warning(f"❌ No user found with email: {email}")
             return render(request, 'user/send_link.html', {'error': 'ایمیل پیدا نشد.'})
     return render(request, 'user/send_link.html')
-
 
 
 def confirm_login_link_view(request, token):
@@ -127,26 +124,23 @@ def confirm_login_link_view(request, token):
         user.backend = settings.AUTHENTICATION_BACKENDS[0]
         login(request, user)
 
+        logger.info(f"✅ Successful login via link for {email}")
         return redirect('home')
-        logger.info(f"✅ ورود موفق از طریق لینک برای {email}")
-
     except CustomUser.DoesNotExist:
-        logger.error(f"❌ کاربر با ایمیل {email} پیدا نشد.")
+        logger.error(f"❌ User with email {email} not found.")
         messages.error(request, 'کاربر یافت نشد.')
         return redirect('login')
-
-
 def password_reset_view(request, token):
     email = verify_token(token)
     if not email:
-        logger.warning("❌ توکن بازیابی نامعتبر است.")
+        logger.warning("❌ Invalid reset token.")
         return render(request, 'user/invalid_token.html')
 
     try:
         user = CustomUser.objects.get(email=email)
-        logger.info(f"🔐 بازیابی رمز برای {email}")
+        logger.info(f"🔐 Password reset requested for {email}")
     except CustomUser.DoesNotExist:
-        logger.warning(f"❌ کاربر با ایمیل {email} پیدا نشد.")
+        logger.warning(f"❌ No user found with email: {email}")
         return render(request, 'user/invalid_token.html')
 
     if request.method == 'POST':
@@ -155,13 +149,13 @@ def password_reset_view(request, token):
             new_password = form.cleaned_data['new_password']
             user.set_password(new_password)
             user.save()
+            logger.info(f"✅ Password successfully changed for {email}")
             messages.success(request, "رمز عبور با موفقیت تغییر کرد.")
             return redirect('login')
     else:
         form = PasswordChangeForm()
 
     return render(request, 'user/password_reset.html', {'form': form})
-
 
 
 def signin_view(request):
@@ -172,16 +166,17 @@ def signin_view(request):
             email = form.cleaned_data.get('email')
             phone = form.cleaned_data.get('phone')
             password = form.cleaned_data['password']
-            logger.info(f"🆕 ثبت‌نام جدید: {username}")
+            logger.info(f"🆕 New registration: {username}")
 
             user = CustomUser(username=username, email=email, phone=phone)
             user.set_password(password)
             user.save()
+
             if phone:
-                logger.info(f"📲 پیام خوش‌آمدگویی به {phone} ارسال شد.")
+                logger.info(f"📲 Welcome SMS sent to {phone}")
                 send_verification_sms(phone, "ثبت‌نام شما با موفقیت انجام شد.")
             elif email:
-                logger.info(f"📧 ایمیل خوش‌آمدگویی به {email} ارسال شد.")
+                logger.info(f"📧 Welcome email sent to {email}")
                 send_mail(
                     subject="ثبت‌نام موفق",
                     message="ثبت‌نام شما با موفقیت انجام شد.",
@@ -197,14 +192,6 @@ def signin_view(request):
 
     return render(request, 'user/sign_in.html', {'form': form})
 
-
-
-# اگر از مدل سفارشی User استفاده می‌کنی که رمز عبور رو هش می‌کنه (مثلاً با AbstractBaseUser یا AbstractUser)، هیچ‌وقت مستقیم password=form.cleaned_data['password'] نذار.
-# باید از user.set_password() استفاده کنی که هش کنه.
-
-
-from django.contrib import messages
-
 def home(request):
     form = CommentForm()
     comments = Comment.objects.filter(approved=True).order_by('-created_at')
@@ -216,8 +203,10 @@ def home(request):
             if request.user.is_authenticated:
                 comment.user = request.user
             else:
+                logger.warning("❌ Anonymous user tried to post a comment.")
                 return redirect('login')
             comment.save()
+            logger.info(f"✅ New comment submitted by {comment.user}")
             messages.success(request, "✅ کامنت شما با موفقیت ثبت شد و پس از تأیید نمایش داده خواهد شد.")
             return redirect('home')
 
@@ -227,10 +216,6 @@ def home(request):
     })
 
 
-
-
-
-# فرم درخواست بازیابی رمز عبور (شماره یا ایمیل)
 def PasswordReset_email_view(request):
     if request.method == 'POST':
         form = passwordResetForm(request.POST)
@@ -241,55 +226,57 @@ def PasswordReset_email_view(request):
                     user = CustomUser.objects.get(email=contact)
                     token = generate_token(user.email)
                     reset_link = request.build_absolute_uri(reverse('password-reset', args=[token]))
+
                     send_mail(
                         subject='بازیابی رمز عبور',
                         message=f'برای تغییر رمز عبور روی لینک کلیک کنید:\n{reset_link}',
                         from_email='zarei.fateme937@gmai.com',
                         recipient_list=[user.email]
                     )
+
+                    logger.info(f"📧 Password reset link sent to {user.email}")
                     messages.success(request, "لینک تغییر رمز به ایمیل شما ارسال شد.")
                     return redirect('login')
-                    logger.info(f"📧 لینک بازیابی برای ایمیل {user.email} ارسال شد.")
+
                 else:
                     user = CustomUser.objects.get(phone=contact)
                     code = str(random.randint(100000, 999999))
                     request.session['reset_code'] = code
                     request.session['reset_phone'] = user.phone
+
                     send_verification_sms(user.phone, code)
+                    logger.info(f"📲 Password reset code sent to {user.phone}")
                     return redirect('verify_reset_code')
-                    logger.info(f"📲 کد بازیابی به شماره {user.phone} ارسال شد.")
+
             except CustomUser.DoesNotExist:
-                logger.warning(f"❌ کاربری با {contact} یافت نشد.")
+                logger.warning(f"❌ No user found with contact: {contact}")
                 messages.error(request, "کاربری با این اطلاعات پیدا نشد.")
     else:
         form = passwordResetForm()
 
     return render(request, 'user/passwordreset_email.html', {'form': form})
 
-
-
-
 def forgot_password_view(request):
     if request.method == 'POST':
         form = passwordResetForm(request.POST)
         if form.is_valid():
             contact = form.cleaned_data['contact']
-
             try:
                 if '@' in contact:
                     user = CustomUser.objects.get(email=contact)
                     token = generate_token(user.email)
                     verify_token(user.email, token)
-                    messages.success(request, 'لینک بازیابی به ایمیل شما ارسال شد.')
+                    logger.info(f"Password reset link sent to email: {contact}")
+                    messages.success(request, 'Password reset link has been sent to your email.')
                 else:
                     user = CustomUser.objects.get(phone=contact)
                     send_verification_sms(user.phone, purpose='reset_password')
                     request.session['reset_phone'] = user.phone
-                    return redirect('verify_reset_code')  # صفحه وارد کردن کد
-                logger.info(f"📨 لینک یا کد بازیابی برای {contact} ارسال شد.")
+                    logger.info(f"Password reset code sent to phone: {contact}")
+                    return redirect('verify_reset_code')
             except CustomUser.DoesNotExist:
-                logger.warning(f"❌ کاربر با {contact} یافت نشد.")
-                messages.error(request, 'کاربری با این اطلاعات پیدا نشد.')
+                logger.warning(f"User not found with contact: {contact}")
+                messages.error(request, 'No user found with this information.')
     else:
         form = passwordResetForm()
 
@@ -297,24 +284,23 @@ def forgot_password_view(request):
 
 
 def user_profile_view(request, slug):
-    logger.info(f"👤 نمایش پروفایل کاربر: {slug}")
+    logger.info(f"Viewing user profile: {slug}")
     user = get_object_or_404(CustomUser, slug=slug)
     return render(request, 'user/profile.html', {'user_profile': user})
-
 
 
 def password_reset_link_view(request, token):
     email = verify_token(token)
     if not email:
-        messages.error(request, 'لینک نامعتبر یا منقضی شده است.')
+        messages.error(request, 'Invalid or expired reset link.')
         return redirect('login')
 
     try:
         user = CustomUser.objects.get(email=email)
-        logger.info(f"🔑 تغییر رمز عبور برای {email}")
+        logger.info(f"Password reset requested via link for: {email}")
     except CustomUser.DoesNotExist:
-        logger.error(f"❌ کاربر با ایمیل {email} یافت نشد.")
-        messages.error(request, "کاربری با این ایمیل یافت نشد.")
+        logger.error(f"User not found with email: {email}")
+        messages.error(request, "No user found with this email.")
         return redirect('login')
 
     if request.method == 'POST':
@@ -323,13 +309,13 @@ def password_reset_link_view(request, token):
             password = form.cleaned_data['new_password']
             user.set_password(password)
             user.save()
-            messages.success(request, 'رمز عبور با موفقیت تغییر یافت.')
+            logger.info(f"Password successfully reset for {email}")
+            messages.success(request, 'Your password has been reset.')
             return redirect('login')
     else:
         form = PasswordChangeForm()
 
     return render(request, 'user/password_reset.html', {'form': form})
-
 
 
 def verify_phone_view(request):
@@ -339,7 +325,7 @@ def verify_phone_view(request):
         user_id = request.session.get('otp_user_id')
 
         if not (code and otp_code and user_id):
-            messages.error(request, 'اطلاعات ناقص است. لطفاً دوباره تلاش کنید.')
+            messages.error(request, 'Incomplete information. Please try again.')
             return redirect('login')
 
         if code == otp_code:
@@ -348,47 +334,47 @@ def verify_phone_view(request):
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
                 login(request, user)
 
-                # پاک‌سازی امن session
+                logger.info(f"User logged in with phone number: {user.phone}")
+
                 request.session.pop('otp_code', None)
                 request.session.pop('otp_user_id', None)
 
-                messages.success(request, f'{user.username} عزیز خوش آمدید!')
+                messages.success(request, f"Welcome back, {user.username}!")
                 return redirect('home')
             except User.DoesNotExist:
-                messages.error(request, 'کاربر یافت نشد.')
-            logger.info(f"📲 ورود موفق با شماره تلفن: {user.phone}")
+                logger.warning("User not found during phone login.")
+                messages.error(request, 'User not found.')
         else:
-            logger.warning(f"❌ کد تأیید نادرست وارد شد.")
-            messages.error(request, 'کد وارد شده اشتباه است.')
+            logger.warning("Incorrect verification code entered.")
+            messages.error(request, 'Incorrect code entered.')
 
     return render(request, 'user/verify_phone.html')
 
 
-def verify_reset_code_view(request): #نمایش فرم تایید برای یازیابی رمز
+def verify_reset_code_view(request):
     if request.method == 'POST':
         entered_code = request.POST.get('code')
         session_code = request.session.get('reset_code')
         phone = request.session.get('reset_phone')
 
         if not all([entered_code, session_code, phone]):
-            messages.error(request, 'اطلاعات ناقص است. لطفاً دوباره تلاش کنید.')
+            messages.error(request, 'Incomplete information. Please try again.')
             return redirect('password-reset')
 
         if entered_code == session_code:
             try:
                 user = User.objects.get(phone=phone)
-                # ذخیره شناسه کاربر در سشن برای ریست رمز
                 request.session['password_reset_user_id'] = user.id
-                # پاک‌سازی otp
                 request.session.pop('reset_otp_code', None)
                 request.session.pop('reset_phone', None)
-                return redirect('password-reset-confirm')  # صفحه تعیین رمز جدید
+                logger.info(f"Correct reset code entered for phone: {phone}")
+                return redirect('password-reset-confirm')
             except User.DoesNotExist:
-                messages.error(request, 'کاربر یافت نشد.')
-            logger.info(f"✅ کد بازیابی درست وارد شد برای {phone}")
+                logger.error(f"User not found with phone: {phone}")
+                messages.error(request, 'User not found.')
         else:
-            logger.warning("❌ کد نادرست برای بازیابی رمز وارد شد.")
-            messages.error(request, 'کد وارد شده صحیح نیست.')
+            logger.warning("Incorrect reset code entered.")
+            messages.error(request, 'Incorrect code.')
 
     return render(request, 'user/verify_reset_code.html')
 
@@ -397,32 +383,32 @@ def password_reset_confirm_view(request):
     user_id = request.session.get('password_reset_user_id')
 
     if not user_id:
-        messages.error(request, "دسترسی نامعتبر یا زمان جلسه به پایان رسیده.")
+        messages.error(request, "Invalid access or session expired.")
         return redirect('login')
 
     try:
         user = CustomUser.objects.get(id=user_id)
     except CustomUser.DoesNotExist:
-        messages.error(request, "کاربری با این مشخصات یافت نشد.")
+        logger.warning("Invalid user ID during password reset confirmation.")
+        messages.error(request, "User not found.")
         return redirect('login')
 
     if request.method == 'POST':
         form = PasswordChangeForm(request.POST)
-        logger.info(f"🔐 رمز عبور با موفقیت برای کاربر {user.username} تغییر یافت.")
         if form.is_valid():
             password = form.cleaned_data['new_password']
             user.set_password(password)
             user.save()
+            logger.info(f"Password successfully changed for user: {user.username}")
             request.session.pop('password_reset_user_id', None)
-            messages.success(request, "رمز عبور با موفقیت تغییر یافت.")
+            messages.success(request, "Password changed successfully.")
             return redirect('login')
         else:
-            messages.error(request, "لطفاً خطاهای فرم را بررسی کنید.")
+            messages.error(request, "Please check the form for errors.")
     else:
         form = PasswordChangeForm()
 
     return render(request, 'user/password_reset.html', {'form': form})
-
 
 
 
