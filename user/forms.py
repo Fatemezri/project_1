@@ -13,7 +13,6 @@ from .models import MediaFile
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
-# در forms.py یا admin.py
 from .utils import upload_file_to_arvan
 from .utils import delete_file_from_arvan
 
