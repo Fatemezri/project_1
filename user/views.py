@@ -101,8 +101,8 @@ def send_login_link_view(request):
                 reverse('confirm-login-link', args=[token])
             )
             send_mail(
-                subject='لینک ورود به حساب',
-                message=f'برای ورود به حساب خود روی لینک زیر کلیک کنید:\n{login_link}',
+                subject='عنوان ایمیل',
+                message=f'برای وارد شدن روی لینک کلیک کنید:\n{login_link}',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False
