@@ -6,6 +6,9 @@ from django.conf import settings
 from botocore.exceptions import ClientError
 import logging
 
+# فعال‌سازی لاگ‌گیری با پشتیبانی از utf-8
+logging.basicConfig(level=logging.INFO, encoding='utf-8')
+
 
 def generate_token(email):
     serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
@@ -40,12 +43,12 @@ def send_verification_sms(phone_number, code):
 
         try:
             sms_ir.send_verify_code(phone_number, template_id, parameters)
-            print(f"کد تأیید {code} با موفقیت به شماره {phone_number} ارسال شد.")
+            logging.info(f"کد تأیید {code} با موفقیت به شماره {phone_number} ارسال شد.")
         except Exception as e:
-            print("خطا در ارسال پیامک:", e)
+            logging.error("خطا در ارسال پیامک: %s", e)
             raise e
     else:
-        print("شماره موبایل نامعتبر است:", phone_number)
+        logging.warning("شماره موبایل نامعتبر است: %s", phone_number)
         raise ValueError("شماره موبایل نامعتبر است.")
 
 
@@ -64,7 +67,7 @@ def upload_file_to_arvan(file_obj, key):
         client.upload_fileobj(file_obj, BUCKET_NAME, key)
         return True
     except Exception as e:
-        print("Upload error:", e)
+        logging.error("Upload error: %s", e)
         return False
 
 def delete_file_from_arvan(key):
@@ -72,7 +75,7 @@ def delete_file_from_arvan(key):
         if key:
             client.delete_object(Bucket=BUCKET_NAME, Key=key)
     except Exception as e:
-        print("Delete error:", e)
+        logging.error("Delete error: %s", e)
 
 def generate_presigned_url(key, expiration=3600):
     try:
@@ -83,5 +86,5 @@ def generate_presigned_url(key, expiration=3600):
         )
         return url
     except ClientError as e:
-        print("URL error:", e)
+        logging.error("URL error: %s", e)
         return None
