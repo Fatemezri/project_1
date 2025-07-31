@@ -21,6 +21,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib import messages
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 
 
 
@@ -100,13 +101,18 @@ def send_login_link_view(request):
             login_link = request.build_absolute_uri(
                 reverse('confirm-login-link', args=[token])
             )
-            send_mail(
-                subject='عنوان ایمیل',
-                message=f'برای وارد شدن روی لینک کلیک کنید:\n{login_link}',
+
+            text_content = f'برای ورود به سایت روی لینک کلیک کنید:\n{login_link}'
+            html_content = f'<p>برای ورود به سایت روی لینک زیر کلیک کنید:</p><p><a href="{login_link}">{login_link}</a></p>'
+
+            email = EmailMultiAlternatives(
+                subject='لینک ورود',
+                body=text_content,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False
+                to=[user.email]
             )
+            email.attach_alternative(html_content, "text/html")
+            email.send()
 
             logger.info(f"📧 Login link sent to {email}.")
             return render(request, 'user/email_sent.html')
