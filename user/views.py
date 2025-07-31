@@ -25,6 +25,7 @@ from django.contrib import messages
 
 
 
+
 def index(request):
     return render(request, 'user/index.html')
 
@@ -59,10 +60,10 @@ def login_view(request):
                 login_link = request.build_absolute_uri(reverse('confirm-login-link', args=[token]))
 
                 send_mail(
-                    'لینک ورود به حساب',
-                    f'برای ورود روی این لینک کلیک کنید:\n{login_link}',
-                    'zarei.fateme937@gmail.com',
-                    [user.email]
+                    'عنوان ایمیل',
+                    'متن ایمیل...',
+                    settings.DEFAULT_FROM_EMAIL,  # ✅ اتوماتیک از settings.py می‌خونه
+                    [user.email],
                 )
 
                 logger.info(f"📧 Login link sent to email: {user.email}")
@@ -228,10 +229,10 @@ def PasswordReset_email_view(request):
                     reset_link = request.build_absolute_uri(reverse('password-reset', args=[token]))
 
                     send_mail(
-                        subject='بازیابی رمز عبور',
-                        message=f'برای تغییر رمز عبور روی لینک کلیک کنید:\n{reset_link}',
-                        from_email='zarei.fateme937@gmai.com',
-                        recipient_list=[user.email]
+                        'عنوان ایمیل',
+                        'متن ایمیل...',
+                        settings.DEFAULT_FROM_EMAIL,  # ✅ اتوماتیک از settings.py می‌خونه
+                        [user.email],
                     )
 
                     logger.info(f"📧 Password reset link sent to {user.email}")
