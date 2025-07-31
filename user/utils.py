@@ -18,9 +18,17 @@ def verify_token(token, max_age=60):
     except Exception:
         return None
 
-
+def fa_to_en_numbers(s):
+    fa_nums = '۰۱۲۳۴۵۶۷۸۹'
+    en_nums = '0123456789'
+    for f, e in zip(fa_nums, en_nums):
+        s = s.replace(f, e)
+    return s
 
 def send_verification_sms(phone_number, code):
+    # تبدیل اعداد فارسی به انگلیسی
+    phone_number = fa_to_en_numbers(phone_number).strip()
+
     # شماره باید با 09 شروع شود و 11 رقمی باشد
     if phone_number.startswith('0') and len(phone_number) == 11:
         sms_ir = SmsIr(
@@ -28,7 +36,7 @@ def send_verification_sms(phone_number, code):
             linenumber=settings.SMS_IR_LINE_NUMBER
         )
         template_id = settings.SMS_IR_TEMPLATE_ID
-        parameters = [{"name": "code", "value": code}]
+        parameters = [{"name": "code", "value": str(code)}]
 
         try:
             sms_ir.send_verify_code(phone_number, template_id, parameters)
@@ -39,7 +47,6 @@ def send_verification_sms(phone_number, code):
     else:
         print("شماره موبایل نامعتبر است:", phone_number)
         raise ValueError("شماره موبایل نامعتبر است.")
-
 
 
 session = boto3.session.Session()
