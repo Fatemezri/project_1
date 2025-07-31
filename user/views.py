@@ -339,7 +339,7 @@ def verify_phone_view(request):
                 request.session.pop('otp_code', None)
                 request.session.pop('otp_user_id', None)
 
-                messages.success(request, f"Welcome back, {user.username}!")
+                messages.success(request, f" خوش آمدی, {user.username}!")
                 return redirect('home')
             except User.DoesNotExist:
                 logger.warning("User not found during phone login.")
