@@ -6,8 +6,8 @@ from django.conf import settings
 from botocore.exceptions import ClientError
 import logging
 
-# فعال‌سازی لاگ‌گیری با پشتیبانی از utf-8
-logging.basicConfig(level=logging.INFO, encoding='utf-8')
+# Logging setup (no need for utf-8 since logs are now ASCII only)
+logging.basicConfig(level=logging.INFO)
 
 
 def generate_token(email):
@@ -29,10 +29,10 @@ def fa_to_en_numbers(s):
     return s
 
 def send_verification_sms(phone_number, code):
-    # تبدیل اعداد فارسی به انگلیسی
+    # Convert Persian digits to English
     phone_number = fa_to_en_numbers(phone_number).strip()
 
-    # شماره باید با 09 شروع شود و 11 رقمی باشد
+    # Phone number must start with 09 and be 11 digits
     if phone_number.startswith('0') and len(phone_number) == 11:
         sms_ir = SmsIr(
             api_key=settings.SMS_IR_API_KEY,
@@ -43,14 +43,13 @@ def send_verification_sms(phone_number, code):
 
         try:
             sms_ir.send_verify_code(phone_number, template_id, parameters)
-            logging.info(f"کد تأیید {code} با موفقیت به شماره {phone_number} ارسال شد.")
+            logging.info(f"Verification code {code} sent to {phone_number}")
         except Exception as e:
-            logging.error("خطا در ارسال پیامک: %s", e)
+            logging.error("Error sending SMS: %s", e)
             raise e
     else:
-        logging.warning("شماره موبایل نامعتبر است: %s", phone_number)
-        raise ValueError("شماره موبایل نامعتبر است.")
-
+        logging.warning("Invalid phone number: %s", phone_number)
+        raise ValueError("Invalid phone number.")
 
 session = boto3.session.Session()
 client = session.client(
