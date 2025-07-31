@@ -31,21 +31,23 @@ def index(request):
     return render(request, 'user/index.html')
 
 
+from django.core.mail import EmailMultiAlternatives
+
 def login_view(request):
     if request.method == 'POST':
         logger.info("📥 Login form submitted.")
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            contact = form.cleaned_data['contact']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data.get('username')
+            contact = form.cleaned_data.get('contact')
+            password = form.cleaned_data.get('password')
 
             try:
                 if '@' in contact:
                     user = User.objects.get(username=username, email=contact)
                 else:
                     user = User.objects.get(username=username, phone=contact)
-                    logger.info(f"👤 User found: {user.username}")
+                logger.info(f"👤 User found: {user.username}")
             except User.DoesNotExist:
                 logger.warning(f"❌ No user found with contact: {contact}")
                 messages.error(request, 'کاربری با این مشخصات یافت نشد.')
@@ -57,16 +59,33 @@ def login_view(request):
                 return redirect('login')
 
             if '@' in contact:
+                # اگر بخوای فقط لینک ساده بفرستی:
+                # token = generate_token(user.email)
+                # login_link = request.build_absolute_uri(reverse('confirm-login-link', args=[token]))
+                #
+                # send_mail(
+                #     subject='لینک ورود',
+                #     message=f'سلام {user.username}!\nبرای ورود به حساب کاربری خود، روی لینک زیر کلیک کنید:\n{login_link}',
+                #     from_email=settings.DEFAULT_FROM_EMAIL,
+                #     recipient_list=[user.email],
+                #     fail_silently=False
+                # )
+
+                # ارسال ایمیل با متن HTML و متن ساده به صورت همزمان (مثل send_login_link_view)
                 token = generate_token(user.email)
                 login_link = request.build_absolute_uri(reverse('confirm-login-link', args=[token]))
 
-                send_mail(
+                text_content = f'سلام {user.username}!\nبرای ورود به سایت روی لینک کلیک کنید:\n{login_link}'
+                html_content = f'<p>سلام {user.username}!</p><p>برای ورود به سایت روی لینک زیر کلیک کنید:</p><p><a href="{login_link}">{login_link}</a></p>'
+
+                email_msg = EmailMultiAlternatives(
                     subject='لینک ورود',
-                    message=f'سلام {user.username}!\nبرای ورود به حساب کاربری خود، روی لینک زیر کلیک کنید:\n{login_link}',
+                    body=text_content,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[user.email],
-                    fail_silently=False
+                    to=[user.email],
                 )
+                email_msg.attach_alternative(html_content, "text/html")
+                email_msg.send(fail_silently=False)
 
                 logger.info(f"📧 Login link sent to email: {user.email}")
                 messages.success(request, 'لینک ورود به ایمیل شما ارسال شد.')
@@ -91,38 +110,6 @@ def login_view(request):
     return render(request, 'user/login.html', {'form': form})
 
 
-
-
-# def send_login_link_view(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-#         try:
-#             user = User.objects.get(email=email)
-#             token = generate_token(email)
-#             login_link = request.build_absolute_uri(
-#                 reverse('confirm-login-link', args=[token])
-#             )
-#
-#             text_content = f'برای ورود به سایت روی لینک کلیک کنید:\n{login_link}'
-#             html_content = f'<p>برای ورود به سایت روی لینک زیر کلیک کنید:</p><p><a href="{login_link}">{login_link}</a></p>'
-#
-#             email = EmailMultiAlternatives(
-#                 subject='لینک ورود',
-#                 body=text_content,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=[user.email]
-#             )
-#             email.attach_alternative(html_content, "text/html")
-#             email.send()
-#
-#             logger.info(f"📧 Login link sent to {email}.")
-#             return render(request, 'user/email_sent.html')
-#         except User.DoesNotExist:
-#             logger.warning(f"❌ No user found with email: {email}")
-#             return render(request, 'user/send_link.html', {'error': 'ایمیل پیدا نشد.'})
-#     return render(request, 'user/send_link.html')
-#
-#
 def confirm_login_link_view(request, token):
     email = verify_token(token)
     if not email:
