@@ -20,7 +20,7 @@ from django.contrib.auth import login
 from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib import messages
-
+from django.conf import settings
 
 
 
@@ -103,9 +103,11 @@ def send_login_link_view(request):
             send_mail(
                 subject='لینک ورود به حساب',
                 message=f'برای ورود به حساب خود روی لینک زیر کلیک کنید:\n{login_link}',
-                from_email=None,
-                recipient_list=[email],
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False
             )
+
             logger.info(f"📧 Login link sent to {email}.")
             return render(request, 'user/email_sent.html')
         except User.DoesNotExist:
@@ -229,10 +231,11 @@ def PasswordReset_email_view(request):
                     reset_link = request.build_absolute_uri(reverse('password-reset', args=[token]))
 
                     send_mail(
-                        'عنوان ایمیل',
-                        'متن ایمیل...',
-                        settings.DEFAULT_FROM_EMAIL,  # ✅ اتوماتیک از settings.py می‌خونه
-                        [user.email],
+                        subject='عنوان ایمیل',
+                        message=f'برای تغییر رمز عبور روی لینک کلیک کنید:\n{reset_link}',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False
                     )
 
                     logger.info(f"📧 Password reset link sent to {user.email}")
