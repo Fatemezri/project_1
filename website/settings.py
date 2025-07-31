@@ -170,8 +170,6 @@ SITE_ID = 1
 
 
 
-
-# فعالسازی pipeline پیش‌فرض
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -188,6 +186,7 @@ EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
@@ -309,3 +308,6 @@ REDIS_DB = 0
 TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 
 AUTH_USER_MODEL = 'user.CustomUser'
+
+
+
