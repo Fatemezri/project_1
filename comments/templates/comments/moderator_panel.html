@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}پنل ناظر{% endblock %}
+
+{% block content %}
+  <h2>کامنت‌های در انتظار تایید</h2>
+  {% if comments %}
+    {% for comment in comments %}
+      <form method="post" action="{% url 'approve_comment' comment.id %}">
+        {% csrf_token %}
+        <p><strong>کاربر:</strong> {{ comment.user }}</p>
+        <p><strong>تاریخ:</strong> {{ comment.created_at|date:"Y-m-d H:i" }}</p>
+        <p><strong>متن:</strong><br>{{ comment.content }}</p>
+        <button type="submit">تایید کامنت</button>
+      </form>
+      <hr style="margin: 2rem 0;">
+    {% endfor %}
+  {% else %}
+    <p style="text-align: center;">هیچ کامنتی برای تایید وجود ندارد.</p>
+  {% endif %}
+{% endblock %}

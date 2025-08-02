@@ -1,3 +1,5 @@
+
+
 import logging
 logger = logging.getLogger('user')
 from .forms import signinForm
@@ -420,7 +422,6 @@ def password_reset_confirm_view(request):
         form = PasswordChangeForm()
 
     return render(request, 'user/password_reset.html', {'form': form})
-
 
 
 

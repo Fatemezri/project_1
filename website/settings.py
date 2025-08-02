@@ -65,12 +65,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'comments',
-    'notifications',
     'templates',
-
-
-
-
 
 
 ]
@@ -308,5 +303,5 @@ TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
