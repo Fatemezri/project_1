@@ -17,7 +17,8 @@ def generate_token(email):
 def verify_token(token, max_age=180):
     serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
     try:
-        return serializer.loads(token, salt='email-confirmation', max_age=max_age)
+        return serializer.loads(token, salt=''
+                                            'email-confirmation', max_age=max_age)
     except Exception:
         return None
 

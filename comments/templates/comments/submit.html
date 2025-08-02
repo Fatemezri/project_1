@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}ارسال کامنت{% endblock %}
+
+{% block content %}
+  <h2>ارسال کامنت</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label for="content">متن کامنت:</label>
+    <textarea id="content" name="content" rows="5" required style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box;"></textarea>
+    <button type="submit">ارسال</button>
+  </form>
+{% endblock %}
