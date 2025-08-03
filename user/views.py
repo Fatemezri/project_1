@@ -22,7 +22,6 @@ from django.contrib.auth import login
 from comments.forms import CommentForm
 from comments.models import Comment
 from django.contrib import messages
-from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 
 
