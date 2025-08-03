@@ -1,12 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.template.response import TemplateResponse
-from django.urls import path, reverse # اضافه کردن reverse
+from django.urls import path, reverse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpRequest
 from django.utils.safestring import mark_safe
 from .models import Comment, Notification
+from django.contrib.auth import get_user_model # اضافه کردن این خط
+
+User = get_user_model() # دریافت مدل کاربری
 
 
 class ModeratorAdminSite(admin.AdminSite):
@@ -19,15 +22,11 @@ class ModeratorAdminSite(admin.AdminSite):
     site_url = '/'  # لینک بازگشت به سایت اصلی
 
     def has_permission(self, request: HttpRequest) -> bool:
-        user = request.user
-        if not (user.is_active and user.is_staff):
-            return False
-
-        return (
-            user.has_perm('comments.add_comment') or
-            user.has_perm('comments.change_comment') or
-            user.has_perm('comments.view_comment')
-        )
+        """
+        فقط به کارمندانی اجازه دسترسی می‌دهد که عضو گروه 'Moderators' باشند.
+        """
+        return request.user.is_active and request.user.is_staff and request.user.groups.filter(
+            name='Moderators').exists()
 
     def get_urls(self):
         urls = super().get_urls()
@@ -78,6 +77,22 @@ class ModeratorAdminSite(admin.AdminSite):
                 comment.status = 'approved'  # تایید همزمان با ارسال گزارش
                 comment.save(update_fields=['moderator_report', 'status'])
                 messages.success(request, "گزارش ارسال و نظر تایید شد.")
+
+                # ارسال اعلان به سوپریوزر
+                try:
+                    # پیدا کردن اولین سوپریوزر
+                    superuser = User.objects.filter(is_superuser=True).first()
+                    if superuser:
+                        Notification.objects.create(
+                            recipient=superuser,
+                            sender=request.user,
+                            notification_type='moderator_report',
+                            message=f"ناظر {request.user.username} گزارشی برای نظر کاربر {comment.user.username} ارسال کرد.",
+                            related_comment=comment
+                        )
+                except Exception as e:
+                    messages.error(request, f"خطا در ارسال اعلان به سوپریوزر: {e}")
+
                 return redirect('moderator_admin:pending_comments')
             else:
                 messages.error(request, "گزارش نمی‌تواند خالی باشد.")
