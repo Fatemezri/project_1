@@ -24,14 +24,10 @@ class ModeratorAdminSite(admin.AdminSite):
 
     def has_permission(self, request: HttpRequest) -> bool:
         user = request.user
-        if not (user.is_active):
+        if not user.is_active:
             return False
-
-        return (
-            user.has_perm('comments.add_comment') or
-            user.has_perm('comments.change_comment') or
-            user.has_perm('comments.view_comment')
-        )
+        # فقط ادمین‌هایی که عضو گروه Moderators هستند اجازه دارند
+        return user.groups.filter(name='Moderators').exists()
 
 
     def get_urls(self):
