@@ -36,5 +36,7 @@ def submit_comment(request):
             messages.success(request, "نظر شما ثبت شد و پس از بررسی منتشر خواهد شد.")
         else:
             messages.error(request, "متن نظر نمی‌تواند خالی باشد.")
+
+    return render(request, 'comment/submit.html')
     return redirect('some_other_view_or_homepage')  # آدرس مورد نظر خود را جایگزین کنید
 
