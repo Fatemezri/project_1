@@ -15,14 +15,22 @@ def comment_list(request):
 
 
 
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Comment
+from django.contrib.auth import get_user_model
+from .models import Notification  # فرض بر اینه که این مدل داری
+
+User = get_user_model()
+
 @login_required
 def submit_comment(request):
     if request.method == 'POST':
-        text = request.POST.get('comment_text')
+        text = request.POST.get('content')
         if text:
-            comment = Comment.objects.create(user=request.user, text=text)
+            comment = Comment.objects.create(user=request.user, content=text)
 
-            # ارسال اعلان به اولین ناظر پیدا شده
             moderator = User.objects.filter(groups__name='Moderators', is_active=True).first()
             if moderator:
                 Notification.objects.create(
@@ -32,11 +40,9 @@ def submit_comment(request):
                     message=f"یک نظر جدید از طرف {request.user.username} ثبت شد.",
                     related_comment=comment
                 )
-
             messages.success(request, "نظر شما ثبت شد و پس از بررسی منتشر خواهد شد.")
+            return redirect('home')  # یا هر صفحه‌ای که میخوای بعد از ثبت هدایت بشه
         else:
             messages.error(request, "متن نظر نمی‌تواند خالی باشد.")
 
     return render(request, 'comment/submit.html')
-    return redirect('some_other_view_or_homepage')  # آدرس مورد نظر خود را جایگزین کنید
-
