@@ -1,15 +1,42 @@
-{% extends "admin/base.html" %}
-{% load static %}
-
-{% block branding %}
-<h1 id="site-name"><a href="{% url 'moderator_admin:index' %}">پنل ناظران</a></h1>
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .unread-messages-alert {
+            background-color: #d3e7ff; /* رنگ آبی روشن */
+            color: #004085; /* رنگ متن آبی تیره */
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin: 10px;
+            direction: rtl;
+            list-style: none; /* حذف نشانگر لیست */
+        }
+        .unread-messages-alert a {
+            display: block;
+            text-decoration: none;
+            color: #004085; /* رنگ لینک آبی تیره */
+            padding: 5px;
+        }
+        .unread-messages-alert a:hover {
+            background-color: #c0d8f3;
+            border-radius: 5px;
+        }
+        .unread-messages-alert .icon {
+            margin-left: 10px;
+        }
+    </style>
 {% endblock %}
 
-{% block nav-global %}
-{{ block.super }}
-{% if unread_report_count > 0 %}
-  <div style="padding: 10px; background-color: #ffc107; color: black; font-weight: bold;">
-    شما {{ unread_report_count }} گزارش جدید دارید! <a href="{% url 'moderator_admin:moderator_notifications' %}">مشاهده</a>
-  </div>
-{% endif %}
+{% block nav_sidebar %}
+    {{ block.super }}
+    {% if user.is_superuser and unread_messages_count > 0 %}
+        <div class="unread-messages-alert">
+            <a href="{% url 'superuser_messages' %}">
+                <span class="icon">✉️</span> پیام جدید داری ({{ unread_messages_count }})
+            </a>
+        </div>
+    {% endif %}
 {% endblock %}

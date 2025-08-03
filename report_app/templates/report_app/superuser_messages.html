@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}پیام‌های داخلی شما{% endblock %}
+{% block content %}
+<div class="container p-4">
+    <h1 class="text-3xl font-bold mb-6">پیام‌های داخلی شما</h1>
+    {% if messages %}
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <ul class="divide-y divide-gray-200">
+                {% for message in messages %}
+                    <li class="py-4">
+                        <p class="text-gray-800"><strong>از طرف:</strong> {{ message.sender.username }}</p>
+                        <p class="text-gray-800"><strong>پیام:</strong> {{ message.content }}</p>
+                        <p class="text-sm text-gray-500">دریافت شده در {{ message.created_at|date:"Y/m/d" }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p class="text-gray-500">شما هیچ پیامی ندارید.</p>
+    {% endif %}
+</div>
+{% endblock %}

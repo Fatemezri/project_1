@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}ثبت کامنت{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+    <h2>ثبت کامنت</h2>
+    <form method="post" action="{% url 'submit_comment' %}">
+        {% csrf_token %}
+        <div>
+            <label for="{{ form.content.id_for_label }}">کامنت شما</label>
+            {{ form.content }}
+        </div>
+        <button type="submit">ثبت</button>
+    </form>
+    <p class="mt-4 text-sm text-gray-600">کامنت شما پس از بررسی در سایت نمایش داده خواهد شد.</p>
+</div>
+{% endblock %}
+

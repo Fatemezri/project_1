@@ -1,0 +1,26 @@
+{% extends "admin/index.html" %}
+{% block content %}
+    {{ block.super }}
+    <div class="main">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="module">
+                    <table>
+                        <caption>
+                            <a href="{% url 'moderator_admin:report_app_message_changelist' %}">
+                                گزارش‌دهی و پیام‌رسانی
+                            </a>
+                        </caption>
+                        <tr>
+                            <td>
+                                <a href="{% url 'moderator_admin:report_app_message_add' %}" class="addlink">
+                                    ارسال گزارش به ادمین اصلی
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

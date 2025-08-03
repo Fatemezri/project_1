@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>{% block title %}عنوان صفحه{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/font-face/vazir-font/4.0.0/font-face.css" rel="stylesheet" type="text/css">
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   {% block extra_css %}{% endblock %}
   <style>
@@ -32,7 +33,7 @@
         font-weight: bold;
         display: block;
     }
-    input {
+    input, textarea { /* اضافه کردن textarea */
         width: 100%;
         padding: 10px;
         margin-top: 5px;
@@ -91,6 +92,33 @@
        </ul>
     {% endif %}
 
+    .text-center { text-align: center; }
+    .bg-white { background-color: #fff; }
+    .p-6 { padding: 1.5rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    .w-full { width: 100%; }
+    .max-w-lg { max-width: 32rem; }
+    .text-green-600 { color: #28a745; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .text-2xl { font-size: 1.5rem; }
+    .font-bold { font-weight: 700; }
+    .mt-4 { margin-top: 1rem; }
+    .text-sm { font-size: 0.875rem; }
+    .text-gray-600 { color: #4b5563; }
+    .container { width: 100%; max-width: 1280px; margin: 0 auto; }
+    .p-4 { padding: 1rem; }
+    .text-3xl { font-size: 1.875rem; }
+    .divide-y > * + * { border-top-width: 1px; }
+    .divide-gray-200 > * + * { border-color: #e5e7eb; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .text-gray-800 { color: #1f2937; }
+    .text-gray-500 { color: #6b7280; }
+    .text-xl { font-size: 1.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .text-sm { font-size: 0.875rem; }
+    .text-gray-500 { color: #6b7280; }
   </style>
 </head>
 <body>

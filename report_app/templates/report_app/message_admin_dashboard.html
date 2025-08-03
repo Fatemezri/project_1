@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}داشبورد مدیر پیام{% endblock %}
+{% block content %}
+<div class="container p-4">
+    <h1 class="text-3xl font-bold mb-6">داشبورد مدیر پیام</h1>
+
+    <!-- بخش ارسال پیام -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">ارسال پیام به سوپریوزرها</h2>
+        <form method="post" action="{% url 'message_admin_dashboard' %}">
+            {% csrf_token %}
+            <div>
+                <label for="{{ message_form.content.id_for_label }}">محتوای پیام</label>
+                {{ message_form.content }}
+            </div>
+            <button type="submit" name="message_submit">ارسال پیام</button>
+        </form>
+    </div>
+
+    <!-- بخش کامنت‌های در انتظار -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">کامنت‌های در انتظار برای تایید</h2>
+        {% if pending_comments %}
+            <ul class="divide-y divide-gray-200">
+                {% for comment in pending_comments %}
+                    <li class="py-4">
+                        <p class="text-gray-800">{{ comment.content }}</p>
+                        <p class="text-sm text-gray-500">از طرف {{ comment.user.username }} در {{ comment.created_at|date:"Y/m/d" }}</p>
+                        <form method="post" action="{% url 'message_admin_dashboard' %}" class="mt-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            <button type="submit" name="approve_comment">تایید</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500">در حال حاضر هیچ کامنت در انتظاری وجود ندارد.</p>
+        {% endif %}
+    </div>
+
+    <!-- بخش پیام‌های ارسالی -->
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-xl font-bold mb-4">پیام‌های ارسالی شما</h2>
+        {% if sent_messages %}
+            <ul class="divide-y divide-gray-200">
+                {% for message in sent_messages %}
+                    <li class="py-4">
+                        <p class="text-gray-800">به: همه سوپریوزرها</p>
+                        <p class="text-gray-800">{{ message.content }}</p>
+                        <p class="text-sm text-gray-500">ارسال شده در {{ message.created_at|date:"Y/m/d" }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500">شما هنوز پیامی ارسال نکرده‌اید.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
