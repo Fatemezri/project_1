@@ -53,7 +53,7 @@ class ModeratorAdminSite(admin.AdminSite):
             'comments': pending_comments,
             'has_permission': self.has_permission(request),
         }
-        return TemplateResponse(request, 'comments/moderator_admin/pending_comments.html', context)
+        return TemplateResponse(request,'comments/moderator_admin/pending_comments.html', context)
 
     def approve_comment(self, request, comment_id):
         """تایید یک نظر و ریدایرکت."""
