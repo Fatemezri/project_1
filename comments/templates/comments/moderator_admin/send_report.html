@@ -1,0 +1,14 @@
+<!-- templates/comments/moderator_admin/send_report.html -->
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="moderator_report">گزارش ناظر:</label><br>
+    <textarea name="moderator_report" rows="6" cols="60">{{ comment.moderator_report }}</textarea><br><br>
+    <button type="submit">ارسال گزارش</button>
+</form>
+
+{% endblock %}
