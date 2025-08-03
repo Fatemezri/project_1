@@ -1,0 +1,74 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">{{ title }}</h1>
+    
+    {% if comments %}
+    <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="py-3 px-6">
+                        کاربر
+                    </th>
+                    <th scope="col" class="py-3 px-6">
+                        متن نظر
+                    </th>
+                    <th scope="col" class="py-3 px-6">
+                        تاریخ
+                    </th>
+                    <th scope="col" class="py-3 px-6">
+                        وضعیت
+                    </th>
+                    <th scope="col" class="py-3 px-6">
+                        اقدامات
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ comment.user.username }}
+                    </th>
+                    <td class="py-4 px-6">
+                        {{ comment.text|truncatechars:50 }}
+                    </td>
+                    <td class="py-4 px-6">
+                        {{ comment.created_at|date:"Y/m/d H:i" }}
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900">
+                            {{ comment.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 flex space-x-2 rtl:space-x-reverse">
+                        <form method="post" action="{% url 'moderator_admin:approve_comment' comment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+                                تایید
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'moderator_admin:reject_comment' comment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                رد
+                            </button>
+                        </form>
+                        <a href="{% url 'moderator_admin:send_report' comment.id %}" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-600 dark:focus:ring-blue-800">
+                            گزارش
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-500 dark:text-gray-400 text-lg">
+        هیچ نظر در انتظار بررسی وجود ندارد.
+    </p>
+    {% endif %}
+</div>
+{% endblock %}
