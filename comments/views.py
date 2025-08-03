@@ -12,15 +12,7 @@ def comment_list(request):
     return render(request, 'comments/comment_list.html', {'comments': approved_comments})
 
 
-
-
-
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Comment
-from django.contrib.auth import get_user_model
-from .models import Notification  # فرض بر اینه که این مدل داری
+ # فرض بر اینه که این مدل داری
 
 User = get_user_model()
 

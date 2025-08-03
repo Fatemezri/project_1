@@ -1,44 +1,60 @@
 from django.contrib import admin
-from .models import Comment, Notification
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+from django.contrib import messages
+from comments.models import Comment, Notification
 
 
-@admin.register(Comment)
-class CommentSuperuserAdmin(admin.ModelAdmin):
+class MyAdminSite(admin.AdminSite):
     """
-    پنل مدیریت استاندارد برای سوپریوزرها با دسترسی کامل به ویرایش.
+    A custom admin site for the main superuser panel.
     """
-    list_display = ('user', 'created_at', 'status', 'moderator_report')
-    list_filter = ('status',)
-    search_fields = ('user__username', 'text')
-    actions = ['approve_selected']
+    site_header = 'مدیریت وب‌گاه'
+    site_title = 'پنل مدیریت'
+    index_title = 'به پنل مدیریت خوش آمدید'
 
-    fields = ('user', 'text', 'status', 'moderator_report')
-    readonly_fields = ('user', 'text')
+    def index(self, request, extra_context=None):
+        # Check for unread notifications for the superuser
+        if request.user.is_superuser:
+            unread_notifications_count = Notification.objects.filter(
+                recipient=request.user, is_read=False, notification_type='moderator_report'
+            ).count()
 
-    @admin.action(description='تایید نظرات انتخاب شده')
-    def approve_selected(self, request, queryset):
-        queryset.update(status='approved')
-        self.message_user(request, f"{queryset.count()} نظر تایید شد.")
+            if unread_notifications_count > 0:
+                # The HTML for the message, including a clickable link
+                notification_message = mark_safe(
+                    f"شما <a href='{reverse('admin:comments_notification_changelist')}'>{unread_notifications_count} گزارش خوانده نشده</a> دارید."
+                )
+
+                # Add the message to Django's messages framework
+                messages.info(request, notification_message)
+
+        # Call the original index view to render the page
+        return super().index(request, extra_context)
 
 
-@admin.register(Notification)
-class NotificationSuperuserAdmin(admin.ModelAdmin):
-    list_display = ('recipient', 'sender', 'notification_type', 'message', 'is_read', 'created_at')
-    list_filter = ('notification_type', 'is_read')
-    search_fields = ('message', 'recipient__username', 'sender__username')
-    readonly_fields = ('recipient', 'sender', 'message', 'related_comment')
+main_admin_site = MyAdminSite(name='main_admin')
+
+
+# Register your models with the custom main admin site
+@admin.register(Comment, site=main_admin_site)
+class CommentMainAdmin(admin.ModelAdmin):
+    # ... your admin configuration for the main panel
+    pass
+
+
+@admin.register(Notification, site=main_admin_site)
+class NotificationMainAdmin(admin.ModelAdmin):
+    list_display = ('message', 'created_at', 'is_read')
+    list_filter = ('is_read', 'notification_type')
     actions = ['mark_as_read']
 
-    def has_add_permission(self, request):
-        return False
+    def get_queryset(self, request):
+        # Filter notifications to show only those for the current user
+        qs = super().get_queryset(request)
+        return qs.filter(recipient=request.user)
 
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    @admin.action(description='اعلان‌های انتخاب شده را به عنوان خوانده شده علامت‌گذاری کن')
+    @admin.action(description='انتخاب شده‌ها را به عنوان خوانده شده علامت‌گذاری کن')
     def mark_as_read(self, request, queryset):
         queryset.update(is_read=True)
         self.message_user(request, f"{queryset.count()} اعلان به عنوان خوانده شده علامت‌گذاری شدند.")
