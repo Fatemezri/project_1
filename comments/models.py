@@ -1,7 +1,9 @@
+# comments/models.py
 from django.db import models
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 class Comment(models.Model):
     STATUS_CHOICES = [
@@ -16,28 +18,33 @@ class Comment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     moderator_report = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.user.username} - {self.status}"
+
     class Meta:
         permissions = [
             ("can_moderate_comments", "Can access the moderator admin panel and moderate comments"),
         ]
 
-    def __str__(self):
-        return f"{self.user.username} - {self.status}"
 
-
-class Notification(models.Model):
-    NOTIFICATION_TYPES = [
+class Report(models.Model):
+    REPORT_TYPES = [
         ('moderator_report', 'گزارش ناظر'),
-        ('new_comment', 'نظر جدید'),
+        ('user_report', 'گزارش کاربر'),
     ]
 
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_notifications')
-    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_notifications')
-    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_reports')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_reports')
+    report_type = models.CharField(max_length=50, choices=REPORT_TYPES)
     message = models.TextField()
     related_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.notification_type} to {self.recipient}"
+        return f"{self.report_type} to {self.recipient}"
+
+    class Meta:
+        db_table = 'reports'
+        verbose_name = 'گزارش'
+        verbose_name_plural = 'گزارش‌ها'
