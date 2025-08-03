@@ -29,10 +29,11 @@ class ModeratorAdminSite(admin.AdminSite):
             return False
 
         return (
-                user.has_perm('comments.add_comment') or
-                user.has_perm('comments.change_comment') or
-                user.has_perm('comments.view_comment')
+            user.has_perm('comments.add_comment') or
+            user.has_perm('comments.change_comment') or
+            user.has_perm('comments.view_comment')
         )
+
 
     def get_urls(self):
         urls = super().get_urls()
@@ -53,7 +54,7 @@ class ModeratorAdminSite(admin.AdminSite):
             'comments': pending_comments,
             'has_permission': self.has_permission(request),
         }
-        return TemplateResponse(request, 'comments/moderator_admin/pending_comments.htm', context)
+        return TemplateResponse(request, 'comments/moderator_admin/pending_comments.html', context)
 
     def approve_comment(self, request, comment_id):
         """تایید یک نظر و ریدایرکت."""
@@ -106,6 +107,8 @@ class ModeratorAdminSite(admin.AdminSite):
                             message=f"ناظر {request.user.username} گزارشی برای نظر کاربر {comment.user.username} ارسال کرد.",
                             related_comment=comment
                         )
+                    else:
+                        messages.warning(request, "سوپریوزری برای ارسال اعلان پیدا نشد.")
                 except Exception as e:
                     messages.error(request, f"خطا در ارسال اعلان به سوپریوزر: {e}")
 
