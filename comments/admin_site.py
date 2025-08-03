@@ -24,7 +24,7 @@ class ModeratorAdminSite(admin.AdminSite):
 
     def has_permission(self, request: HttpRequest) -> bool:
         user = request.user
-        if not (user.is_active and user.is_staff):
+        if not (user.is_active):
             return False
 
         return (
