@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
 class Comment(models.Model):
     STATUS_CHOICES = [
         ('pending', 'در انتظار بررسی'),
@@ -22,29 +21,25 @@ class Comment(models.Model):
         return f"{self.user.username} - {self.status}"
 
     class Meta:
+        # Add this permission.
         permissions = [
             ("can_moderate_comments", "Can access the moderator admin panel and moderate comments"),
         ]
 
 
-class Report(models.Model):
-    REPORT_TYPES = [
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
         ('moderator_report', 'گزارش ناظر'),
-        ('user_report', 'گزارش کاربر'),
+        ('new_comment', 'نظر جدید'),
     ]
 
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_reports')
-    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_reports')
-    report_type = models.CharField(max_length=50, choices=REPORT_TYPES)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_notifications')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_notifications')
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
     message = models.TextField()
     related_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.report_type} to {self.recipient}"
-
-    class Meta:
-        db_table = 'reports'
-        verbose_name = 'گزارش'
-        verbose_name_plural = 'گزارش‌ها'
+        return f"{self.notification_type} to {self.recipient}"
