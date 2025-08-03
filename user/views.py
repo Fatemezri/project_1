@@ -206,7 +206,7 @@ def signin_view(request):
 
 def home(request):
     form = CommentForm()
-    comments = Comment.objects.filter(approved=True).order_by('-created_at')
+    comments = Comment.objects.filter(status='approved')
 
     if request.method == 'POST':
         form = CommentForm(request.POST)

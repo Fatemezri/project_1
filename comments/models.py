@@ -9,9 +9,9 @@ class Comment(models.Model):
     Model for storing user comments.
     """
     STATUS_CHOICES = (
-        ('pending', 'Pending Review'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
+        ('pending', 'در انتظار تأیید'),
+        ('approved', 'تأیید شده'),
+        ('rejected', 'رد شده'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
