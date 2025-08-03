@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpRequest
 from django.utils.safestring import mark_safe
-from .models import Comment, Notification
+from .models import Comment, Report
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -20,14 +20,9 @@ class ModeratorAdminSite(admin.AdminSite):
 
     def has_permission(self, request: HttpRequest) -> bool:
         user = request.user
-        if not user.is_active:
+        if not user.is_active or not user.is_staff:
             return False
 
-        # Check if the user is a staff member first (required for all admin sites)
-        if not user.is_staff:
-            return False
-
-        # Superusers are explicitly denied, only moderators with the permission can access.
         if user.is_superuser:
             return False
 
@@ -54,7 +49,6 @@ class ModeratorAdminSite(admin.AdminSite):
         return TemplateResponse(request, 'comments/moderator_admin/pending_comments.html', context)
 
     def approve_comment(self, request, comment_id):
-        # We will use GET requests to make this simple and avoid CSRF issues for now
         try:
             comment = Comment.objects.get(pk=comment_id)
             comment.status = 'approved'
@@ -86,7 +80,6 @@ class ModeratorAdminSite(admin.AdminSite):
             if report_text:
                 comment.moderator_report = report_text
                 comment.status = 'approved'
-                # Saving the model will now trigger the signal
                 comment.save(update_fields=['moderator_report', 'status'])
                 messages.success(request, "گزارش ارسال و نظر تایید شد.")
             else:
@@ -101,13 +94,70 @@ class ModeratorAdminSite(admin.AdminSite):
         return TemplateResponse(request, 'comments/moderator_admin/send_report.html', context)
 
     def notifications_view(self, request):
-        notifications = Notification.objects.filter(recipient=request.user, is_read=False)
+        reports = Report.objects.filter(recipient=request.user, is_read=False)
         context = {
             'title': 'اعلانات ناظر',
-            'notifications': notifications,
-            'notifications_list': notifications,
+            'notifications': reports,
+            'notifications_list': reports,
         }
         return TemplateResponse(request, 'comments/moderator_admin/notifications.html', context)
 
 
 moderator_admin_site = ModeratorAdminSite(name='moderator_admin')
+
+
+@admin.register(Comment, site=moderator_admin_site)
+class CommentModeratorAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created_at', 'status', 'view_actions')
+    list_filter = ('status',)
+    search_fields = ('user__username', 'text')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(status__in=['pending', 'approved'])
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.has_perm('comments.can_moderate_comments')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def view_actions(self, obj):
+        if obj.status == 'pending':
+            approve_url = reverse('moderator_admin:approve_comment', args=[obj.id])
+            reject_url = reverse('moderator_admin:reject_comment', args=[obj.id])
+            report_url = reverse('moderator_admin:send_report', args=[obj.id])
+
+            return mark_safe(f"""
+                <a href="{approve_url}" class="button button-approve">تایید</a>
+                <a href="{reject_url}" class="button button-reject">رد</a>
+                <a href="{report_url}" class="button button-report">گزارش</a>
+            """)
+        return ""
+
+    view_actions.short_description = "اقدامات"
+
+
+@admin.register(Report, site=moderator_admin_site)
+class ReportModeratorAdmin(admin.ModelAdmin):
+    list_display = ('message', 'created_at', 'is_read')
+    list_filter = ('is_read', 'report_type')
+    search_fields = ('message',)
+    actions = ['mark_as_read']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    @admin.action(description='انتخاب شده‌ها را به عنوان خوانده شده علامت‌گذاری کن')
+    def mark_as_read(self, request, queryset):
+        queryset.update(is_read=True)
+        self.message_user(request, f"{queryset.count()} گزارش به عنوان خوانده شده علامت‌گذاری شدند.")
