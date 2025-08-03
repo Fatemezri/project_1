@@ -1,5 +1,3 @@
-# comments/admin_site.py
-
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.template.response import TemplateResponse
@@ -161,17 +159,11 @@ class CommentModeratorAdmin(admin.ModelAdmin):
     def view_actions(self, obj):
         if obj.status == 'pending':
             return mark_safe(f"""
-                <form method="post" action="{reverse('moderator_admin:approve_comment', args=[obj.id])}" class="inline">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                    <button type="submit" class="button button-approve">تایید</button>
-                </form>
-                <form method="post" action="{reverse('moderator_admin:reject_comment', args=[obj.id])}" class="inline">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                    <button type="submit" class="button button-reject">رد</button>
-                </form>
-                <a href="{reverse('moderator_admin:send_report', args=[obj.id])}" class="button button-report">گزارش</a>
+                <a href="{reverse('moderator_admin:approve_comment', args=[obj.id])}" class="button">تایید</a>
+                <a href="{reverse('moderator_admin:reject_comment', args=[obj.id])}" class="button">رد</a>
+                <a href="{reverse('moderator_admin:send_report', args=[obj.id])}" class="button">گزارش</a>
             """)
-        return ""
+        return
 
     view_actions.short_description = "اقدامات"
 
