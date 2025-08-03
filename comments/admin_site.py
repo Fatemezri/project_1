@@ -27,12 +27,11 @@ class ModeratorAdminSite(admin.AdminSite):
         if not (user.is_active):
             return False
 
-        return (
-            user.has_perm('comments.add_comment') or
-            user.has_perm('comments.change_comment') or
-            user.has_perm('comments.view_comment')
-        )
+        if user.is_superuser:
+            return False
 
+        # Only grant access to users who have a specific moderator permission.
+        return user.has_perm('comments.can_moderate_comments')
 
     def get_urls(self):
         urls = super().get_urls()
