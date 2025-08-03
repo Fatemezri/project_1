@@ -16,6 +16,11 @@ class Comment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     moderator_report = models.TextField(blank=True, null=True)
 
+    class Meta:
+        permissions = [
+            ("can_moderate_comments", "Can access the moderator admin panel and moderate comments"),
+        ]
+
     def __str__(self):
         return f"{self.user.username} - {self.status}"
 
