@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'moderator_admin:index' %}">پنل ناظران</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+{{ block.super }}
+{% if unread_report_count > 0 %}
+  <div style="padding: 10px; background-color: #ffc107; color: black; font-weight: bold;">
+    شما {{ unread_report_count }} گزارش جدید دارید! <a href="{% url 'moderator_admin:moderator_notifications' %}">مشاهده</a>
+  </div>
+{% endif %}
+{% endblock %}

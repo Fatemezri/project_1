@@ -80,6 +80,8 @@ class ModeratorAdminSite(admin.AdminSite):
 
     def send_report_view(self, request, comment_id):
         """فرم برای ناظران جهت نوشتن گزارش."""
+
+
         try:
             comment = Comment.objects.get(pk=comment_id)
         except Comment.DoesNotExist:
@@ -133,6 +135,21 @@ class ModeratorAdminSite(admin.AdminSite):
         }
         return TemplateResponse(request, 'comments/moderator_admin/notifications.html', context)
 
+
+    def each_context(self, request):
+        context = super().each_context(request)
+
+        if request.user.is_authenticated:
+            unread_notifications = Notification.objects.filter(
+                recipient=request.user,
+                is_read=False,
+                notification_type='moderator_report'  # فقط گزارش‌ها
+            ).count()
+            context['unread_report_count'] = unread_notifications
+        else:
+            context['unread_report_count'] = 0
+
+        return context
 
 moderator_admin_site = ModeratorAdminSite(name='moderator_admin')
 

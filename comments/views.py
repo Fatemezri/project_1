@@ -37,3 +37,4 @@ def submit_comment(request):
         else:
             messages.error(request, "متن نظر نمی‌تواند خالی باشد.")
     return redirect('some_other_view_or_homepage')  # آدرس مورد نظر خود را جایگزین کنید
+
