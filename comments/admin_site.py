@@ -24,10 +24,11 @@ class ModeratorAdminSite(admin.AdminSite):
             return False
 
         return (
-                user.has_perm('comments.add_comment') or
-                user.has_perm('comments.change_comment') or
-                user.has_perm('comments.view_comment')
+            user.has_perm('comments.add_comment') or
+            user.has_perm('comments.change_comment') or
+            user.has_perm('comments.view_comment')
         )
+
 
     def get_urls(self):
         urls = super().get_urls()
@@ -131,14 +132,37 @@ class CommentModeratorAdmin(admin.ModelAdmin):
         """ستون سفارشی برای اقدامات ناظر."""
         if obj.status == 'pending':
             return mark_safe(f"""
-                <a href="{moderator_admin_site.reverse('approve_comment', args=[obj.id])}" class="button">تایید</a>
-                <a href="{moderator_admin_site.reverse('reject_comment', args=[obj.id])}" class="button">رد</a>
-                <a href="{moderator_admin_site.reverse('send_report', args=[obj.id])}" class="button">گزارش</a>
+                <a href="{self.admin_site.reverse('approve_comment', args=[obj.id])}" class="button">تایید</a>
+                <a href="{self.admin_site.reverse('reject_comment', args=[obj.id])}" class="button">رد</a>
+                <a href="{self.admin_site.reverse('send_report', args=[obj.id])}" class="button">گزارش</a>
             """)
         return ""
 
     view_actions.short_description = "اقدامات"
     view_actions.allow_tags = True
+
+
+# ثبت مدل اعلان با پنل مدیریت ناظر
+@admin.register(Notification, site=moderator_admin_site)
+class NotificationModeratorAdmin(admin.ModelAdmin):
+    list_display = ('message', 'created_at', 'is_read')
+    list_filter = ('is_read', 'notification_type')
+    search_fields = ('message',)
+    actions = ['mark_as_read']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    @admin.action(description='انتخاب شده‌ها را به عنوان خوانده شده علامت‌گذاری کن')
+    def mark_as_read(self, request, queryset):
+        queryset.update(is_read=True)
+        self.message_user(request, f"{queryset.count()} اعلان به عنوان خوانده شده علامت‌گذاری شدند.")
 
 
 # ثبت مدل اعلان با پنل مدیریت ناظر
