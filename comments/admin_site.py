@@ -82,7 +82,7 @@ class ModeratorAdminSite(admin.AdminSite):
             'comment': comment,
             'has_permission': self.has_permission(request),
         }
-        return TemplateResponse(request, 'templates/comments/moderator_admin/send_report.html', context)
+        return TemplateResponse(request, 'comments/templates/comments/moderator_admin/send_report.html', context)
 
     def notifications_view(self, request):
         notifications = Notification.objects.filter(recipient=request.user, is_read=False)
