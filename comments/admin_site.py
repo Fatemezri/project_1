@@ -1,13 +1,12 @@
-
+# comments/admin_site.py
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpRequest
 from django.utils.safestring import mark_safe
-from .models import Comment, Notification
+from .models import Comment, Report
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -15,7 +14,7 @@ User = get_user_model()
 
 class ModeratorAdminSite(admin.AdminSite):
     """
-    یک پنل مدیریت سفارشی برای ناظران (moderators).
+    پنل مدیریت سفارشی برای ناظران.
     """
     site_header = 'پنل ناظر'
     site_title = 'پنل ناظر'
@@ -24,13 +23,12 @@ class ModeratorAdminSite(admin.AdminSite):
 
     def has_permission(self, request: HttpRequest) -> bool:
         user = request.user
-        if not (user.is_active):
+        if not user.is_active or not user.is_staff:
             return False
 
         if user.is_superuser:
             return False
 
-        # Only grant access to users who have a specific moderator permission.
         return user.has_perm('comments.can_moderate_comments')
 
     def get_urls(self):
@@ -45,41 +43,35 @@ class ModeratorAdminSite(admin.AdminSite):
         return custom_urls + urls
 
     def pending_comments_view(self, request):
-        """نمایش سفارشی برای نظرات در انتظار."""
         pending_comments = Comment.objects.filter(status='pending')
         context = {
             'title': 'نظرات در انتظار',
             'comments': pending_comments,
             'has_permission': self.has_permission(request),
         }
-        return TemplateResponse(request,'comments/moderator_admin/pending_comments.html', context)
+        return TemplateResponse(request, 'comments/moderator_admin/pending_comments.html', context)
 
     def approve_comment(self, request, comment_id):
-        """تایید یک نظر و ریدایرکت."""
         try:
             comment = Comment.objects.get(pk=comment_id)
-            if request.method == 'POST':
-                comment.status = 'approved'
-                comment.save(update_fields=['status'])
-                messages.success(request, f"نظر از {comment.user.username} تایید شد.")
+            comment.status = 'approved'
+            comment.save(update_fields=['status'])
+            messages.success(request, f"نظر از {comment.user.username} تایید شد.")
         except Comment.DoesNotExist:
             messages.error(request, "نظر مورد نظر پیدا نشد.")
         return redirect('moderator_admin:pending_comments')
 
     def reject_comment(self, request, comment_id):
-        """رد یک نظر و ریدایرکت."""
         try:
             comment = Comment.objects.get(pk=comment_id)
-            if request.method == 'POST':
-                comment.status = 'rejected'
-                comment.save(update_fields=['status'])
-                messages.success(request, f"نظر از {comment.user.username} رد شد.")
+            comment.status = 'rejected'
+            comment.save(update_fields=['status'])
+            messages.success(request, f"نظر از {comment.user.username} رد شد.")
         except Comment.DoesNotExist:
             messages.error(request, "نظر مورد نظر پیدا نشد.")
         return redirect('moderator_admin:pending_comments')
 
     def send_report_view(self, request, comment_id):
-        """فرم برای ناظران جهت نوشتن گزارش."""
         try:
             comment = Comment.objects.get(pk=comment_id)
         except Comment.DoesNotExist:
@@ -91,12 +83,10 @@ class ModeratorAdminSite(admin.AdminSite):
             if report_text:
                 comment.moderator_report = report_text
                 comment.status = 'approved'
-                # این خط کد باعث فعال شدن سیگنال post_save می‌شود
                 comment.save(update_fields=['moderator_report', 'status'])
                 messages.success(request, "گزارش ارسال و نظر تایید شد.")
             else:
                 messages.error(request, "گزارش نمی‌تواند خالی باشد.")
-
             return redirect('moderator_admin:pending_comments')
 
         context = {
@@ -107,14 +97,11 @@ class ModeratorAdminSite(admin.AdminSite):
         return TemplateResponse(request, 'comments/moderator_admin/send_report.html', context)
 
     def notifications_view(self, request):
-        """
-        نمایش سفارشی برای نمایش اعلان‌ها به ناظر.
-        """
-        notifications = Notification.objects.filter(recipient=request.user, is_read=False)
+        reports = Report.objects.filter(recipient=request.user, is_read=False)
         context = {
             'title': 'اعلانات ناظر',
-            'notifications': notifications,
-            'notifications_list': notifications,
+            'notifications': reports,
+            'notifications_list': reports,
         }
         return TemplateResponse(request, 'comments/moderator_admin/notifications.html', context)
 
@@ -143,26 +130,24 @@ class CommentModeratorAdmin(admin.ModelAdmin):
 
     def view_actions(self, obj):
         if obj.status == 'pending':
+            approve_url = reverse('moderator_admin:approve_comment', args=[obj.id])
+            reject_url = reverse('moderator_admin:reject_comment', args=[obj.id])
+            report_url = reverse('moderator_admin:send_report', args=[obj.id])
+
             return mark_safe(f"""
-                <form method="post" action="{reverse('moderator_admin:approve_comment', args=[obj.id])}" class="inline">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                    <button type="submit" class="button button-approve">تایید</button>
-                </form>
-                <form method="post" action="{reverse('moderator_admin:reject_comment', args=[obj.id])}" class="inline">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                    <button type="submit" class="button button-reject">رد</button>
-                </form>
-                <a href="{reverse('moderator_admin:send_report', args=[obj.id])}" class="button button-report">گزارش</a>
+                <a href="{approve_url}" class="button button-approve">تایید</a>
+                <a href="{reject_url}" class="button button-reject">رد</a>
+                <a href="{report_url}" class="button button-report">گزارش</a>
             """)
         return ""
 
     view_actions.short_description = "اقدامات"
 
 
-@admin.register(Notification, site=moderator_admin_site)
-class NotificationModeratorAdmin(admin.ModelAdmin):
+@admin.register(Report, site=moderator_admin_site)
+class ReportModeratorAdmin(admin.ModelAdmin):
     list_display = ('message', 'created_at', 'is_read')
-    list_filter = ('is_read', 'notification_type')
+    list_filter = ('is_read', 'report_type')
     search_fields = ('message',)
     actions = ['mark_as_read']
 
@@ -178,4 +163,4 @@ class NotificationModeratorAdmin(admin.ModelAdmin):
     @admin.action(description='انتخاب شده‌ها را به عنوان خوانده شده علامت‌گذاری کن')
     def mark_as_read(self, request, queryset):
         queryset.update(is_read=True)
-        self.message_user(request, f"{queryset.count()} اعلان به عنوان خوانده شده علامت‌گذاری شدند.")
+        self.message_user(request, f"{queryset.count()} گزارش به عنوان خوانده شده علامت‌گذاری شدند.")
