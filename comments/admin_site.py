@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from .models import Comment, Notification
 from django.contrib.admin import AdminSite
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
 
 class ModeratorAdminSite(admin.AdminSite):
@@ -131,12 +132,14 @@ class CommentModeratorAdmin(admin.ModelAdmin):
         return False
 
     def view_actions(self, obj):
-        """Custom column for moderation actions."""
         if obj.status == 'pending':
+            approve_url = reverse('moderator_admin:approve_comment', args=[obj.id])
+            reject_url = reverse('moderator_admin:reject_comment', args=[obj.id])
+            report_url = reverse('moderator_admin:send_report', args=[obj.id])
             return mark_safe(f"""
-                <a href="{moderator_admin_site.reverse('approve_comment', args=[obj.id])}" class="button">Approve</a>
-                <a href="{moderator_admin_site.reverse('reject_comment', args=[obj.id])}" class="button">Reject</a>
-                <a href="{moderator_admin_site.reverse('send_report', args=[obj.id])}" class="button">Report</a>
+                <a href="{approve_url}" class="button">Approve</a>
+                <a href="{reject_url}" class="button">Reject</a>
+                <a href="{report_url}" class="button">Report</a>
             """)
         return ""
 
