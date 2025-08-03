@@ -91,28 +91,13 @@ class ModeratorAdminSite(admin.AdminSite):
             if report_text:
                 comment.moderator_report = report_text
                 comment.status = 'approved'
+                # این خط کد باعث فعال شدن سیگنال post_save می‌شود
                 comment.save(update_fields=['moderator_report', 'status'])
                 messages.success(request, "گزارش ارسال و نظر تایید شد.")
-
-                # ارسال اعلان به سوپریوزر
-                try:
-                    superuser = User.objects.filter(is_superuser=True).first()
-                    if superuser:
-                        Notification.objects.create(
-                            recipient=superuser,
-                            sender=request.user,
-                            notification_type='moderator_report',
-                            message=f"ناظر {request.user.username} گزارشی برای نظر کاربر {comment.user.username} ارسال کرد.",
-                            related_comment=comment
-                        )
-                    else:
-                        messages.warning(request, "سوپریوزری برای ارسال اعلان پیدا نشد.")
-                except Exception as e:
-                    messages.error(request, f"خطا در ارسال اعلان به سوپریوزر: {e}")
-
-                return redirect('moderator_admin:pending_comments')
             else:
                 messages.error(request, "گزارش نمی‌تواند خالی باشد.")
+
+            return redirect('moderator_admin:pending_comments')
 
         context = {
             'title': 'ارسال گزارش به سوپریوزر',
