@@ -22,11 +22,15 @@ class ModeratorAdminSite(admin.AdminSite):
     site_url = '/'  # لینک بازگشت به سایت اصلی
 
     def has_permission(self, request: HttpRequest) -> bool:
-        """
-        فقط به کارمندانی اجازه دسترسی می‌دهد که عضو گروه 'Moderators' باشند.
-        """
-        return request.user.is_active and request.user.is_staff and request.user.groups.filter(
-            name='Moderators').exists()
+        user = request.user
+        if not (user.is_active and user.is_staff):
+            return False
+
+        return (
+            user.has_perm('comments.add_comment') or
+            user.has_perm('comments.change_comment') or
+            user.has_perm('comments.view_comment')
+        )
 
     def get_urls(self):
         urls = super().get_urls()
