@@ -1,9 +1,18 @@
 {% extends 'admin/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="px-4 py-8">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">{{ title }}</h1>
-    
+
+    {% if messages %}
+        <ul class="messages mb-4">
+            {% for message in messages %}
+                <li class="p-3 mb-2 rounded-lg {% if message.tags %} bg-{{ message.tags }}-100 text-{{ message.tags }}-800{% endif %}" style="direction: rtl;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     {% if comments %}
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
         <table class="w-full text-sm text-right text-gray-500 dark:text-gray-400">
@@ -30,7 +39,9 @@
                 {% for comment in comments %}
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                     <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {{ comment.user.username }}
+                        <a href="{% url 'moderator_admin:send_report' comment.id %}" class="text-blue-600 hover:underline">
+                            {{ comment.user.username }}
+                        </a>
                     </th>
                     <td class="py-4 px-6">
                         {{ comment.text|truncatechars:50 }}
