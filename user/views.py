@@ -19,8 +19,8 @@ from .models import CustomUser
 from .utils import verify_token
 from django.conf import settings
 from django.contrib.auth import login
-from comments.forms import CommentForm
-from comments.models import Comment
+from comment_app.forms import CommentForm
+from comment_app.models import Comment
 from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 
