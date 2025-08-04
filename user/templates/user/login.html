@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{# {% load socialaccount %} #}  <-- این خط را کامنت کنید
+{% load socialaccount %}
 {% block title %}ورود به حساب کاربری{% endblock %}
 
 {% block content %}
@@ -37,11 +37,11 @@
 
     <button type="submit">ورود</button>
 
-    {# <a href="{% provider_login_url 'google' %}"> #}  <-- این خط را کامنت کنید
-    {#   <button type="button" style="margin-top: 10px; background-color: #db4437;"> #}  <-- این خط را کامنت کنید
-    {#     ورود با گوگل #}  <-- این خط را کامنت کنید
-    {#   </button> #}  <-- این خط را کامنت کنید
-    {# </a> #}  <-- این خط را کامنت کنید
+    <a href="{% provider_login_url 'google' %}">
+      <button type="button" style="margin-top: 10px; background-color: #db4437;">
+        ورود با گوگل
+      </button>
+    </a>
 
     <p style="text-align:center; margin-top: 10px;">
       هنوز حساب ندارید؟
