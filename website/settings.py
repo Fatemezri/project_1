@@ -196,17 +196,15 @@ SMS_IR_API_KEY = os.getenv("SMS_IR_API_KEY")
 SMS_IR_LINE_NUMBER = os.getenv("SMS_IR_LINE_NUMBER")
 SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
 
-
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+
 LOGGING = {
-
-
     'version': 1,
     'disable_existing_loggers': False,
-
     'formatters': {
         'verbose': {
             'format': '[{levelname}] {asctime} ({name}) ▶ {message}',
@@ -217,43 +215,84 @@ LOGGING = {
             'style': '{',
         },
     },
-
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'filename': os.path.join(LOGS_DIR, 'debug.log'),
             'formatter': 'verbose',
             'encoding': 'utf-8',
         },
         'errors': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+            'filename': os.path.join(LOGS_DIR, 'error.log'),
             'formatter': 'verbose',
             'encoding': 'utf-8',
         },
     },
-
     'loggers': {
+        # لاگر اصلی جنگو
         'django': {
             'handlers': ['file', 'errors'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
-        'user': {
+        # لاگر برای درخواست‌های http با خطا
+        'django.request': {
+            'handlers': ['errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # لاگر برای کوئری‌های دیتابیس
+        'django.db.backends': {
             'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
+            'level': 'INFO',
+            'propagate': False,
         },
-        'ratelimit': {
+        # لاگرهای مربوط به اپلیکیشن‌های پروژه شما
+        'user': {
             'handlers': ['file', 'errors'],
             'level': 'DEBUG',
             'propagate': False,
         },
+        'comment_app': {
+            'handlers': ['file', 'errors'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'report_app': {
+            'handlers': ['file', 'errors'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'website': {
+            'handlers': ['file', 'errors'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'celery': {
+            'handlers': ['file', 'errors'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'Email': {
+            'handlers': ['file', 'errors'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'sms': {
+            'handlers': ['file', 'errors'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # تنظیمات پیش‌فرض برای هر لاگری که تعریف نشده
+        'root': {
+            'handlers': ['file', 'errors'],
+            'level': 'WARNING',
+        },
     }
 }
-
 
 
 ARVAN_ACCESS_KEY = config("ARVAN_ACCESS_KEY")
