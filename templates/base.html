@@ -1,51 +1,27 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>عنوان صفحه</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- ✅ استفاده از آیکن خارجی -->
-  <link rel="icon" type="image/x-icon" href="https://favicon.io/favicon.ico">
-
-  <style>
-    body {
-      font-family: Tahoma, sans-serif;
-      direction: rtl;
-      background-color: #f5f5f5;
-      padding: 2rem;
-    }
-    form {
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      max-width: 400px;
-      margin: 2rem auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    textarea, button {
-      width: 100%;
-      margin-top: 1rem;
-      padding: 0.5rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>ارسال نظر</title>
 </head>
-<body>
-  <h2 style="text-align:center;">ارسال کامنت</h2>
-  <form method="POST">
-    {% csrf_token %}
-    <textarea name="content" rows="4" placeholder="متن کامنت..."></textarea>
-    <button type="submit">ارسال</button>
-  </form>
+<body style="font-family: Tahoma; direction: rtl; background: #f9f9f9; padding: 2rem;">
+
+    <h2>ارسال کامنت</h2>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color: green;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="content">متن کامنت:</label><br>
+        <textarea id="content" name="content" rows="5" cols="40" placeholder="کامنت خود را بنویسید..."></textarea><br><br>
+        <button type="submit">ارسال</button>
+    </form>
+
 </body>
 </html>
