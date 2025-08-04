@@ -1,9 +1,7 @@
-from django.db import models
-from django.utils.text import slugify
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django_jalali.db import models as jmodels
 from django.db import models
-
+from .signals import good_evening_email_sent_signal, good_evening_email_failed_signal
 
 
 class CustomUserManager(BaseUserManager):
@@ -82,3 +80,39 @@ class MediaFile(models.Model):
     class Meta:
         verbose_name = 'فایل'
         verbose_name_plural = 'فایل‌ها'
+
+
+
+
+class SystemNotification(models.Model):
+    message = models.TextField(verbose_name="پیام")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="زمان")
+    level = models.CharField(max_length=20, default='info', verbose_name="سطح") # info, warning, error
+
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = "نوتیفیکیشن سیستم"
+        verbose_name_plural = "نوتیفیکیشن‌های سیستم"
+
+    def __str__(self):
+        return f"{self.level}: {self.message[:50]}..."
+
+
+def create_sent_email_notification(sender, count, **kwargs):
+    SystemNotification.objects.create(
+        message=f"ایمیل 'عصر بخیر' با موفقیت برای {count} کاربر ارسال شد.",
+        level='info'
+    )
+    print(f"Notification created: Email sent to {count} users.")
+
+# Receiver برای سیگنال خطای ارسال ایمیل
+def create_failed_email_notification(sender, error, **kwargs):
+    SystemNotification.objects.create(
+        message=f"خطا در ارسال ایمیل 'عصر بخیر': {error}",
+        level='error'
+    )
+    print(f"Notification created: Email sending failed with error: {error}")
+
+
+good_evening_email_sent_signal.connect(create_sent_email_notification)
+good_evening_email_failed_signal.connect(create_failed_email_notification)

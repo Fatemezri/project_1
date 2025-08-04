@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'comment_app',
     'django.contrib.humanize' ,
     'section',
+    'adminsortable2',
 
 ]
 
@@ -261,9 +262,26 @@ ARVAN_BUCKET = config("ARVAN_BUCKET")
 ARVAN_ENDPOINT = config("ARVAN_ENDPOINT")
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-celery-results'
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Tehran'
+CELERY_ENABLE_UTC = True
+CELERY_BEAT_SCHEDULE = {
+    'send-good-evening-email-daily': {
+        'task': 'your_app.tasks.send_good_evening_email_task', # مسیر کامل تسک شما
+        'schedule': crontab(hour=15, minute=0), # 15:00 UTC = 18:00 Khartoum (UTC+3)
+        'args': (),
+        'kwargs': {},
+        'options': {'queue': 'default'}
+    },
+}
+
+
+
+
 
 CACHES = {
     "default": {
