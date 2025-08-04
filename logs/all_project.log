@@ -1,0 +1,511 @@
+[INFO] 2025-08-04 11:37:08,671 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 11:37:09,959 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 11:37:10,018 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 11:37:10,018 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 11:38:30,240 (user.views:32) ▶ Accessing the index page.
+[DEBUG] 2025-08-04 11:38:30,248 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 11:38:30,249 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[INFO] 2025-08-04 11:38:30,264 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 11:38:30,264 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 11:38:30,317 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 11:38:30,317 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[INFO] 2025-08-04 11:38:33,226 (user.views:101) ▶ Rendering login page.
+[DEBUG] 2025-08-04 11:38:33,232 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 11:38:33,233 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[ERROR] 2025-08-04 11:38:33,266 (django.request:253) ▶ Internal Server Error: /login/
+Traceback (most recent call last):
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\project\mizan_gostar\project\user\views.py", line 104, in login_view
+    return render(request, 'user/login.html', {'form': form})
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\library.py", line 321, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\templatetags\socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 302, in get_app
+    raise SocialApp.DoesNotExist()
+allauth.socialaccount.models.SocialApp.DoesNotExist
+[ERROR] 2025-08-04 11:38:33,284 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 174875
+[ERROR] 2025-08-04 11:38:33,284 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 174875
+[INFO] 2025-08-04 12:01:00,760 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:01:03,387 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:01:03,516 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:01:03,516 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:01:55,042 (user.views:32) ▶ Accessing the index page.
+[DEBUG] 2025-08-04 12:01:55,071 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 12:01:55,077 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[INFO] 2025-08-04 12:01:55,145 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 12:01:55,145 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 12:01:55,312 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:01:55,312 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[DEBUG] 2025-08-04 12:03:30,919 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 12:03:30,924 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[INFO] 2025-08-04 12:03:31,170 (django.server:213) ▶ "GET /admin/ HTTP/1.1" 200 26543
+[INFO] 2025-08-04 12:03:31,170 (django.server:213) ▶ "GET /admin/ HTTP/1.1" 200 26543
+[INFO] 2025-08-04 12:03:31,288 (django.server:213) ▶ "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,288 (django.server:213) ▶ "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,301 (django.server:213) ▶ "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,299 (django.server:213) ▶ "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,301 (django.server:213) ▶ "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,295 (django.server:213) ▶ "GET /static/admin/css/rtl.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,303 (django.server:213) ▶ "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,300 (django.server:213) ▶ "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,299 (django.server:213) ▶ "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,311 (django.server:213) ▶ "GET /static/admin/css/responsive_rtl.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,295 (django.server:213) ▶ "GET /static/admin/css/rtl.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,303 (django.server:213) ▶ "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,300 (django.server:213) ▶ "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,311 (django.server:213) ▶ "GET /static/admin/css/responsive_rtl.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,326 (django.server:213) ▶ "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,326 (django.server:213) ▶ "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,328 (django.server:213) ▶ "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,328 (django.server:213) ▶ "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,351 (django.server:213) ▶ "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,352 (django.server:213) ▶ "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,351 (django.server:213) ▶ "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:03:31,352 (django.server:213) ▶ "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:24:53,649 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:24:54,777 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:24:54,830 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:24:54,830 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:24:57,287 (user.views:32) ▶ Accessing the index page.
+[DEBUG] 2025-08-04 12:24:57,295 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 12:24:57,296 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[INFO] 2025-08-04 12:24:57,317 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 12:24:57,317 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 12:24:57,390 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:24:57,390 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:24:58,219 (django.server:213) ▶ "GET /favicon.ico HTTP/1.1" 404 6638
+[WARNING] 2025-08-04 12:24:58,219 (django.server:213) ▶ "GET /favicon.ico HTTP/1.1" 404 6638
+[INFO] 2025-08-04 12:28:58,417 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:28:59,583 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:28:59,638 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:28:59,638 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:29:05,948 (user.views:32) ▶ Accessing the index page.
+[DEBUG] 2025-08-04 12:29:05,956 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 12:29:05,958 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[INFO] 2025-08-04 12:29:05,975 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 12:29:05,975 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 12:29:06,036 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:29:06,036 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:29:38,499 (django.server:213) ▶ "GET /favicon.ico HTTP/1.1" 404 6638
+[WARNING] 2025-08-04 12:29:38,499 (django.server:213) ▶ "GET /favicon.ico HTTP/1.1" 404 6638
+[INFO] 2025-08-04 12:29:48,095 (user.views:101) ▶ Rendering login page.
+[DEBUG] 2025-08-04 12:29:48,100 (report_app.context_processors:9) ▶ Context processor 'unread_messages_count' called for user 'fateme'.
+[INFO] 2025-08-04 12:29:48,100 (report_app.context_processors:14) ▶ Unread messages count for superuser 'fateme': 5
+[INFO] 2025-08-04 12:29:48,113 (django.server:213) ▶ "GET /login/ HTTP/1.1" 200 4564
+[INFO] 2025-08-04 12:29:48,113 (django.server:213) ▶ "GET /login/ HTTP/1.1" 200 4564
+[WARNING] 2025-08-04 12:29:48,161 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:29:48,161 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[INFO] 2025-08-04 12:35:41,269 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\user\views.py changed, reloading.
+[INFO] 2025-08-04 12:35:41,269 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\user\views.py changed, reloading.
+[INFO] 2025-08-04 12:35:42,791 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:35:42,852 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:35:42,852 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:36:50,614 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\user\views.py changed, reloading.
+[INFO] 2025-08-04 12:36:50,614 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\user\views.py changed, reloading.
+[INFO] 2025-08-04 12:36:52,147 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:36:52,199 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:36:52,199 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:37:21,632 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\user\views.py changed, reloading.
+[INFO] 2025-08-04 12:37:21,632 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\user\views.py changed, reloading.
+[INFO] 2025-08-04 12:37:23,307 (report_app.admin:18) ▶ MessageAdmin is registered in the admin panel.
+[INFO] 2025-08-04 12:37:23,377 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:37:23,377 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:41:49,324 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\section\admin.py changed, reloading.
+[INFO] 2025-08-04 12:41:49,324 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\section\admin.py changed, reloading.
+[INFO] 2025-08-04 12:41:50,805 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:41:50,805 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:41:52,795 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 12:41:52,795 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 12:41:52,861 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:41:52,861 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:41:53,383 (django.server:213) ▶ "GET /favicon.ico HTTP/1.1" 404 6638
+[WARNING] 2025-08-04 12:41:53,383 (django.server:213) ▶ "GET /favicon.ico HTTP/1.1" 404 6638
+[INFO] 2025-08-04 12:41:54,598 (django.server:213) ▶ "GET /login/ HTTP/1.1" 200 4564
+[INFO] 2025-08-04 12:41:54,598 (django.server:213) ▶ "GET /login/ HTTP/1.1" 200 4564
+[WARNING] 2025-08-04 12:41:54,639 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:41:54,639 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[INFO] 2025-08-04 12:43:05,303 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:43:05,303 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:43:07,996 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 12:43:07,996 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 12:43:08,058 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:43:08,058 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[ERROR] 2025-08-04 12:43:09,909 (django.request:253) ▶ Internal Server Error: /login/
+Traceback (most recent call last):
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\project\mizan_gostar\project\user\views.py", line 92, in login_view
+    return render(request, 'user/login.html', {'form': form})
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\library.py", line 321, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\templatetags\socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 302, in get_app
+    raise SocialApp.DoesNotExist()
+allauth.socialaccount.models.SocialApp.DoesNotExist
+[ERROR] 2025-08-04 12:43:09,952 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 174741
+[ERROR] 2025-08-04 12:43:09,952 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 174741
+[INFO] 2025-08-04 12:43:44,775 (django.server:213) ▶ "GET /admin/ HTTP/1.1" 200 26543
+[INFO] 2025-08-04 12:43:44,775 (django.server:213) ▶ "GET /admin/ HTTP/1.1" 200 26543
+[INFO] 2025-08-04 12:43:51,781 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23077
+[INFO] 2025-08-04 12:43:51,781 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23077
+[INFO] 2025-08-04 12:43:51,831 (django.server:213) ▶ "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,831 (django.server:213) ▶ "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,835 (django.server:213) ▶ "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,835 (django.server:213) ▶ "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,841 (django.server:213) ▶ "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,846 (django.server:213) ▶ "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,849 (django.server:213) ▶ "GET /static/admin/js/core.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,841 (django.server:213) ▶ "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,850 (django.server:213) ▶ "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,846 (django.server:213) ▶ "GET /static/admin/js/actions.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,849 (django.server:213) ▶ "GET /static/admin/js/core.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,852 (django.server:213) ▶ "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,850 (django.server:213) ▶ "GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,852 (django.server:213) ▶ "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,863 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:43:51,863 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:43:51,880 (django.server:213) ▶ "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,881 (django.server:213) ▶ "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,881 (django.server:213) ▶ "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,880 (django.server:213) ▶ "GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,885 (django.server:213) ▶ "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,885 (django.server:213) ▶ "GET /static/admin/img/search.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,930 (django.server:213) ▶ "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,930 (django.server:213) ▶ "GET /static/admin/js/filters.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,978 (django.server:213) ▶ "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,978 (django.server:213) ▶ "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,978 (django.server:213) ▶ "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:51,978 (django.server:213) ▶ "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:43:59,741 (django.server:213) ▶ "POST /admin/sites/site/ HTTP/1.1" 200 21045
+[INFO] 2025-08-04 12:43:59,741 (django.server:213) ▶ "POST /admin/sites/site/ HTTP/1.1" 200 21045
+[INFO] 2025-08-04 12:43:59,786 (django.server:213) ▶ "GET /static/admin/js/cancel.js HTTP/1.1" 200 884
+[INFO] 2025-08-04 12:43:59,786 (django.server:213) ▶ "GET /static/admin/js/cancel.js HTTP/1.1" 200 884
+[INFO] 2025-08-04 12:44:01,083 (django.server:213) ▶ "POST /admin/sites/site/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:44:01,083 (django.server:213) ▶ "POST /admin/sites/site/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:44:01,119 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 21413
+[INFO] 2025-08-04 12:44:01,119 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 21413
+[INFO] 2025-08-04 12:44:01,158 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:01,158 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:01,175 (django.server:213) ▶ "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:01,175 (django.server:213) ▶ "GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,189 (django.server:213) ▶ "GET /admin/sites/site/add/ HTTP/1.1" 200 22352
+[INFO] 2025-08-04 12:44:03,189 (django.server:213) ▶ "GET /admin/sites/site/add/ HTTP/1.1" 200 22352
+[INFO] 2025-08-04 12:44:03,223 (django.server:213) ▶ "GET /static/admin/css/forms.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,223 (django.server:213) ▶ "GET /static/admin/css/forms.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,229 (django.server:213) ▶ "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,229 (django.server:213) ▶ "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,232 (django.server:213) ▶ "GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,232 (django.server:213) ▶ "GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,243 (django.server:213) ▶ "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,243 (django.server:213) ▶ "GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:03,244 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:03,244 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:23,913 (django.server:213) ▶ "POST /admin/sites/site/add/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:44:23,913 (django.server:213) ▶ "POST /admin/sites/site/add/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:44:23,968 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23351
+[INFO] 2025-08-04 12:44:23,968 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23351
+[INFO] 2025-08-04 12:44:24,020 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:24,020 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:28,063 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/ HTTP/1.1" 200 21046
+[INFO] 2025-08-04 12:44:28,063 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/ HTTP/1.1" 200 21046
+[INFO] 2025-08-04 12:44:28,105 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:28,105 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:30,348 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/add/ HTTP/1.1" 200 27890
+[INFO] 2025-08-04 12:44:30,348 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/add/ HTTP/1.1" 200 27890
+[INFO] 2025-08-04 12:44:30,380 (django.server:213) ▶ "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:30,380 (django.server:213) ▶ "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:30,381 (django.server:213) ▶ "GET /static/admin/js/SelectBox.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:30,381 (django.server:213) ▶ "GET /static/admin/js/SelectBox.js HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:30,394 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:30,394 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:30,433 (django.server:213) ▶ "GET /static/admin/img/selector-icons.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:30,433 (django.server:213) ▶ "GET /static/admin/img/selector-icons.svg HTTP/1.1" 304 0
+[INFO] 2025-08-04 12:44:45,937 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23125
+[INFO] 2025-08-04 12:44:45,937 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23125
+[INFO] 2025-08-04 12:44:45,986 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:45,986 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:47,650 (django.server:213) ▶ "GET /admin/sites/site/2/change/ HTTP/1.1" 200 22646
+[INFO] 2025-08-04 12:44:47,650 (django.server:213) ▶ "GET /admin/sites/site/2/change/ HTTP/1.1" 200 22646
+[INFO] 2025-08-04 12:44:47,688 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:44:47,688 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:21,111 (django.server:213) ▶ "POST /admin/sites/site/2/change/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:45:21,111 (django.server:213) ▶ "POST /admin/sites/site/2/change/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:45:21,163 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23319
+[INFO] 2025-08-04 12:45:21,163 (django.server:213) ▶ "GET /admin/sites/site/ HTTP/1.1" 200 23319
+[INFO] 2025-08-04 12:45:21,208 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:21,208 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:27,433 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/ HTTP/1.1" 200 21046
+[INFO] 2025-08-04 12:45:27,433 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/ HTTP/1.1" 200 21046
+[INFO] 2025-08-04 12:45:27,474 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:27,474 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:29,616 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/add/ HTTP/1.1" 200 27881
+[INFO] 2025-08-04 12:45:29,616 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/add/ HTTP/1.1" 200 27881
+[INFO] 2025-08-04 12:45:29,653 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:29,653 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:43,366 (django.server:213) ▶ "POST /admin/socialaccount/socialapp/add/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:45:43,366 (django.server:213) ▶ "POST /admin/socialaccount/socialapp/add/ HTTP/1.1" 302 0
+[INFO] 2025-08-04 12:45:43,412 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/ HTTP/1.1" 200 22866
+[INFO] 2025-08-04 12:45:43,412 (django.server:213) ▶ "GET /admin/socialaccount/socialapp/ HTTP/1.1" 200 22866
+[INFO] 2025-08-04 12:45:43,461 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[INFO] 2025-08-04 12:45:43,461 (django.server:213) ▶ "GET /admin/jsi18n/ HTTP/1.1" 200 12738
+[ERROR] 2025-08-04 12:46:03,161 (django.request:253) ▶ Internal Server Error: /login/
+Traceback (most recent call last):
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\project\mizan_gostar\project\user\views.py", line 92, in login_view
+    return render(request, 'user/login.html', {'form': form})
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\library.py", line 321, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\templatetags\socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 295, in get_app
+    apps = self.list_apps(request, provider=provider, client_id=client_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 240, in list_apps
+    db_apps = SocialApp.objects.on_site(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\models.py", line 35, in on_site
+    site = get_current_site(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\contrib\sites\shortcuts.py", line 16, in get_current_site
+    return Site.objects.get_current(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\contrib\sites\models.py", line 59, in get_current
+    return self._get_site_by_id(site_id)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\contrib\sites\models.py", line 30, in _get_site_by_id
+    site = self.get(pk=site_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\db\models\query.py", line 633, in get
+    raise self.model.DoesNotExist(
+        "%s matching query does not exist." % self.model._meta.object_name
+    )
+django.contrib.sites.models.Site.DoesNotExist: Site matching query does not exist.
+[ERROR] 2025-08-04 12:46:03,191 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 203628
+[ERROR] 2025-08-04 12:46:03,191 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 203628
+[INFO] 2025-08-04 12:53:56,271 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\website\settings.py changed, reloading.
+[INFO] 2025-08-04 12:53:56,271 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\website\settings.py changed, reloading.
+[INFO] 2025-08-04 12:53:58,049 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:53:58,049 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:54:22,491 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:54:22,491 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 12:54:25,693 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[INFO] 2025-08-04 12:54:25,693 (django.server:213) ▶ "GET / HTTP/1.1" 200 3433
+[WARNING] 2025-08-04 12:54:25,746 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[WARNING] 2025-08-04 12:54:25,746 (django.server:213) ▶ "GET /static/css/style.css HTTP/1.1" 404 1853
+[ERROR] 2025-08-04 12:54:35,716 (django.request:253) ▶ Internal Server Error: /login/
+Traceback (most recent call last):
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\project\mizan_gostar\project\user\views.py", line 92, in login_view
+    return render(request, 'user/login.html', {'form': form})
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\template\library.py", line 321, in render
+    output = self.func(*resolved_args, **resolved_kwargs)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\templatetags\socialaccount.py", line 21, in provider_login_url
+    provider = adapter.get_provider(request, provider)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 212, in get_provider
+    app = self.get_app(request, provider=provider, client_id=client_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 295, in get_app
+    apps = self.list_apps(request, provider=provider, client_id=client_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\adapter.py", line 240, in list_apps
+    db_apps = SocialApp.objects.on_site(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\allauth\socialaccount\models.py", line 35, in on_site
+    site = get_current_site(request)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\contrib\sites\shortcuts.py", line 16, in get_current_site
+    return Site.objects.get_current(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\contrib\sites\models.py", line 59, in get_current
+    return self._get_site_by_id(site_id)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\contrib\sites\models.py", line 30, in _get_site_by_id
+    site = self.get(pk=site_id)
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "D:\project\mizan_gostar\project\.venv\Lib\site-packages\django\db\models\query.py", line 633, in get
+    raise self.model.DoesNotExist(
+        "%s matching query does not exist." % self.model._meta.object_name
+    )
+django.contrib.sites.models.Site.DoesNotExist: Site matching query does not exist.
+[ERROR] 2025-08-04 12:54:35,771 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 203888
+[ERROR] 2025-08-04 12:54:35,771 (django.server:213) ▶ "GET /login/ HTTP/1.1" 500 203888
+[INFO] 2025-08-04 13:01:19,216 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 13:01:19,216 (django.utils.autoreload:667) ▶ Watching for file changes with StatReloader
+[INFO] 2025-08-04 13:04:31,415 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\website\settings.py changed, reloading.
+[INFO] 2025-08-04 13:04:31,415 (django.utils.autoreload:265) ▶ D:\project\mizan_gostar\project\website\settings.py changed, reloading.

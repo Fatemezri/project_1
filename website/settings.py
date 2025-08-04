@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from decouple import config
 from dotenv import load_dotenv
-load_dotenv()
 from celery.schedules import crontab
 
 
