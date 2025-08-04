@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from decouple import config
 load_dotenv()
 from dotenv import load_dotenv
-
+from celery.schedules import crontab
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,8 +56,8 @@ INSTALLED_APPS = [
     'django_jalali',
     'django_ckeditor_5',
     'storages',
-    'django_celery_results',
     'django_celery_beat',
+    'django_celery_results',
     'import_export',
     'allauth',
     'allauth.account',
@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'report_app',
     'comment_app',
     'django.contrib.humanize' ,
+    'section',
 
 ]
 
@@ -185,7 +186,7 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True')== 'True'
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
-
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # توکن امن با نصب پکیج itsdangerous
 
