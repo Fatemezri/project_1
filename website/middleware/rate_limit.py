@@ -5,7 +5,7 @@ from django.core.cache import cache
 class RateLimitMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.rate_limit = 30        # حداکثر تعداد درخواست
+        self.rate_limit = 100        # حداکثر تعداد درخواست
         self.time_window = 120      # مدت زمان مسدودی به ثانیه (مثلاً ۲ دقیقه)
 
     def __call__(self, request):
