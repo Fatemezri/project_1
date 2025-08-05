@@ -3,55 +3,146 @@
 {% block title %}ورود به حساب کاربری{% endblock %}
 
 {% block content %}
-  <form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    <h2>ورود به حساب</h2>
+<style>
+  form {
+    max-width: 400px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    font-family: Tahoma, sans-serif;
+    direction: rtl;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+  }
+  label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #34495e;
+  }
+  input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  input:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+  .error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+  }
+  .nonfield-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.7rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  button[type="submit"] {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button[type="submit"]:hover {
+    background-color: #2980b9;
+  }
+  a {
+    color: #3498db;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .social-login {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #db4437;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+  }
+  .social-login:hover {
+    background-color: #b7362a;
+  }
+  p.text-center {
+    text-align: center;
+    margin-top: 1rem;
+    color: #555;
+  }
+</style>
 
-    {% if form.non_field_errors %}
-      <div class="nonfield-error">
-        {{ form.non_field_errors }}
-      </div>
-    {% endif %}
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <h2>ورود به حساب</h2>
 
-    <label for="{{ form.username.id_for_label }}">نام کاربری:</label>
-    {{ form.username }}
-    {% for error in form.username.errors %}
-      <div class="error">{{ error }}</div>
+  {% if form.non_field_errors %}
+    <div class="nonfield-error">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <label for="{{ form.username.id_for_label }}">نام کاربری:</label>
+  {{ form.username }}
+  {% for error in form.username.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
+
+  <label for="{{ form.contact.id_for_label }}">ایمیل یا شماره موبایل:</label>
+  {{ form.contact }}
+  {% for error in form.contact.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
+
+  <label for="{{ form.password.id_for_label }}">رمز عبور:</label>
+  {{ form.password }}
+  {% for error in form.password.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
+
+  <p style="margin-top: 10px;">
+    <a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور؟</a>
+  </p>
+
+  <button type="submit">ورود</button>
+
+  <a href="{% provider_login_url 'google' %}">
+    <button type="button" class="social-login">
+      ورود با گوگل
+    </button>
+  </a>
+
+  <p class="text-center">
+    هنوز حساب ندارید؟
+    <a href="{% url 'signin' %}">ثبت‌نام کنید</a>
+  </p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p class="error">{{ message }}</p>
     {% endfor %}
-
-    <label for="{{ form.contact.id_for_label }}">ایمیل یا شماره موبایل:</label>
-    {{ form.contact }}
-    {% for error in form.contact.errors %}
-      <div class="error">{{ error }}</div>
-    {% endfor %}
-
-    <label for="{{ form.password.id_for_label }}">رمز عبور:</label>
-    {{ form.password }}
-    {% for error in form.password.errors %}
-      <div class="error">{{ error }}</div>
-    {% endfor %}
-
-    <p style="margin-top: 10px;">
-      <a href="{% url 'PasswordReset_email' %}">فراموشی رمز عبور؟</a>
-    </p>
-
-    <button type="submit">ورود</button>
-
-    <a href="{% provider_login_url 'google' %}">
-      <button type="button" style="margin-top: 10px; background-color: #db4437;">
-        ورود با گوگل
-      </button>
-    </a>
-
-    <p style="text-align:center; margin-top: 10px;">
-      هنوز حساب ندارید؟
-      <a href="{% url 'signin' %}">ثبت‌نام کنید</a>
-    </p>
-
-    {% if messages %}
-      {% for message in messages %}
-        <p class="error">{{ message }}</p>
-      {% endfor %}
-    {% endif %}
-  </form>
+  {% endif %}
+</form>
 {% endblock %}

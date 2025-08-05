@@ -29,7 +29,35 @@ from django.core.mail import EmailMultiAlternatives
 
 
 def index(request):
-    return render(request, 'user/index.html')
+    return render(request, 'user/index.html')  # صفحه اصلی
+
+def home(request):
+    form = CommentForm()
+    comments = Comment.objects.filter(status='approved')
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            if not request.user.is_authenticated:
+                logger.warning("❌ Anonymous user tried to post a comment.")
+                messages.error(request, "برای ارسال نظر ابتدا وارد حساب خود شوید.")
+                return redirect('login')
+
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.save()
+            logger.info(f"✅ New comment submitted by {comment.user}")
+            messages.success(request, "✅ کامنت شما با موفقیت ثبت شد و پس از تأیید نمایش داده خواهد شد.")
+            return redirect('home')
+
+    return render(request, 'user/home.html', {
+        'form': form,
+        'comments': comments
+    })
+
+def profile_view(request, slug):
+    user = get_object_or_404(User, slug=slug)
+    return render(request, 'user/profile.html', {'profile_user': user})
 
 
 def login_view(request):
@@ -203,29 +231,12 @@ def signin_view(request):
 
     return render(request, 'user/sign_in.html', {'form': form})
 
-def home(request):
-    form = CommentForm()
-    comments = Comment.objects.filter(status='approved')
 
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            if request.user.is_authenticated:
-                comment.user = request.user
-            else:
-                logger.warning("❌ Anonymous user tried to post a comment.")
-                return redirect('login')
-            comment.save()
-            logger.info(f"✅ New comment submitted by {comment.user}")
-            messages.success(request, "✅ کامنت شما با موفقیت ثبت شد و پس از تأیید نمایش داده خواهد شد.")
-            return redirect('home')
 
-    return render(request, 'user/home.html', {
-        'form': form,
-        'comments': comments
-    })
 
+def profile_view(request, slug):
+    user = get_object_or_404(User, slug=slug)
+    return render(request, 'user/profile.html', {'profile_user': user})
 
 def PasswordReset_email_view(request):
     if request.method == 'POST':

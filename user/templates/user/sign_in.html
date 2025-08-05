@@ -1,55 +1,153 @@
 {% extends 'base.html' %}
 {% load socialaccount %}
+
 {% block title %}ثبت‌نام{% endblock %}
 
 {% block content %}
-  <form method="post">
-    {% csrf_token %}
-    <h2>ثبت‌نام</h2>
+<style>
+  form {
+    max-width: 400px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    font-family: Tahoma, sans-serif;
+    direction: rtl;
+    animation: fadeInForm 0.8s ease forwards;
+  }
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+  }
+  label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 700;
+    color: #34495e;
+  }
+  input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  input:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+  .error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+  }
+  .nonfield-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.7rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  button[type="submit"] {
+    margin-top: 1.8rem;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button[type="submit"]:hover {
+    background-color: #2980b9;
+  }
+  .google-btn {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #db4437;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
+  .google-btn:hover {
+    background-color: #b7362a;
+  }
+  p.text-center {
+    text-align: center;
+    margin-top: 1rem;
+    color: #555;
+  }
+  a {
+    color: #3498db;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 
-    {% if form.non_field_errors %}
-      <div class="nonfield-error">
-        {% for error in form.non_field_errors %}
-          <div>{{ error }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  @keyframes fadeInForm {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+</style>
 
-    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
-    {{ form.username }}
-    {% for error in form.username.errors %}
-      <div class="error">{{ error }}</div>
-    {% endfor %}
+<form method="post">
+  {% csrf_token %}
+  <h2>ثبت‌نام</h2>
 
-    <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label>
-    {{ form.contact }}
-    {% for error in form.contact.errors %}
-      <div class="error">{{ error }}</div>
-    {% endfor %}
+  {% if form.non_field_errors %}
+    <div class="nonfield-error">
+      {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-    <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
-    {{ form.password }}
-    {% for error in form.password.errors %}
-      <div class="error">{{ error }}</div>
-    {% endfor %}
+  <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+  {{ form.username }}
+  {% for error in form.username.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
 
-    <label for="{{ form.confirm_password.id_for_label }}">{{ form.confirm_password.label }}</label>
-    {{ form.confirm_password }}
-    {% for error in form.confirm_password.errors %}
-      <div class="error">{{ error }}</div>
-    {% endfor %}
+  <label for="{{ form.contact.id_for_label }}">{{ form.contact.label }}</label>
+  {{ form.contact }}
+  {% for error in form.contact.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
 
-    <button type="submit">ثبت‌نام</button>
+  <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+  {{ form.password }}
+  {% for error in form.password.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
 
-    <a href="{% provider_login_url 'google' %}">
-      <button type="button" style="margin-top: 10px; background-color: #db4437;">
-        ثبت‌نام با گوگل
-      </button>
-    </a>
+  <label for="{{ form.confirm_password.id_for_label }}">{{ form.confirm_password.label }}</label>
+  {{ form.confirm_password }}
+  {% for error in form.confirm_password.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
 
-    <p style="text-align:center; margin-top: 10px;">
-      قبلاً ثبت‌نام کرده‌اید؟
-      <a href="{% url 'login' %}">وارد شوید</a>
-    </p>
-  </form>
+  <button type="submit">ثبت‌نام</button>
+
+  <a href="{% provider_login_url 'google' %}">
+    <button type="button" class="google-btn">ثبت‌نام با گوگل</button>
+  </a>
+
+  <p class="text-center">
+    قبلاً ثبت‌نام کرده‌اید؟
+    <a href="{% url 'login' %}">وارد شوید</a>
+  </p>
+</form>
 {% endblock %}

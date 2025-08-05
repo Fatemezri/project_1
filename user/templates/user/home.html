@@ -1,50 +1,150 @@
 {% extends 'base.html' %}
-
 {% block title %}خانه{% endblock %}
 
 {% block content %}
-  <div class="container">
+<style>
+  .container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1.5rem 2rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    font-family: 'Tahoma', sans-serif;
+    direction: rtl;
+  }
+  h2, h3 {
+    color: #2c3e50;
+    text-align: center;
+    animation: fadeInDown 0.7s ease forwards;
+  }
+  p {
+    color: #555;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .button {
+    display: inline-block;
+    margin: 1rem auto 2rem auto;
+    padding: 0.8rem 2rem;
+    background-color: #3498db;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .button:hover {
+    background-color: #2980b9;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(41, 128, 185, 0.6);
+  }
+  form {
+    margin-top: 1rem;
+  }
+  form button {
+    margin-top: 1rem;
+    padding: 0.7rem 2rem;
+    background: #27ae60;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  form button:hover {
+    background: #219150;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  ul li {
+    background: #ecf0f1;
+    margin: 0.8rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  ul li strong {
+    color: #2980b9;
+  }
+  ul li small {
+    display: block;
+    margin-top: 0.5rem;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+  }
+  .alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  .alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
 
-    <h2>خوش آمدید {{ request.user.username }}</h2>
-    <p>برای مشاهده پروفایل خود روی دکمه زیر کلیک کنید:</p>
-    <a href="{% url 'profile' request.user.slug %}" class="button">پروفایل من</a>
+  /* Animations */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 
-    <hr>
+<div class="container">
+  <h2>خوش آمدید {{ request.user.username }}</h2>
+  <p>برای مشاهده پروفایل خود روی دکمه زیر کلیک کنید:</p>
+  <a href="{% url 'profile' request.user.slug %}" class="button">پروفایل من</a>
 
-    <!-- نمایش پیام‌های سیستم -->
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" style="padding: 10px; background-color: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 15px;">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
+  <hr>
 
-    <!-- فرم ارسال کامنت -->
-    <h3>ارسال نظر</h3>
-    <form method="post">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <h3>ارسال نظر</h3>
+  {% if request.user.is_authenticated %}
+    <form method="post" novalidate>
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit" class="button">ارسال</button>
+      <button type="submit">ارسال</button>
     </form>
+  {% else %}
+    <p>برای ارسال نظر باید وارد حساب خود شوید.</p>
+  {% endif %}
 
-    <hr>
+  <hr>
 
-    <!-- لیست کامنت‌های تأیید شده -->
-    <h3>نظرات کاربران</h3>
-    {% if comments %}
-      <ul>
-        {% for comment in comments %}
-          <li style="margin-bottom: 20px;">
-            <strong>{{ comment.user.username }}</strong>
-            <p>{{ comment.content }}</p>
-            <small>{{ comment.created_at|date:"Y/m/d H:i" }}</small>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>هنوز نظری ثبت نشده است.</p>
-    {% endif %}
-
-  </div>
+  <h3>نظرات کاربران</h3>
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li>
+          <strong>{{ comment.user.username }}</strong>
+          <p>{{ comment.content }}</p>
+          <small>{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>هنوز نظری ثبت نشده است.</p>
+  {% endif %}
+</div>
 {% endblock %}

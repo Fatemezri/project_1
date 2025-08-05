@@ -7,8 +7,12 @@ from .models import CustomUser
 from django.core.validators import validate_email
 import re
 from django import forms
+from ckeditor.widgets import CKEditorWidget
 
 
+class SendEmailForm(forms.Form):
+    subject = forms.CharField(max_length=255)
+    body = forms.CharField(widget=CKEditorWidget())
 
 
 class LoginForm(forms.Form):

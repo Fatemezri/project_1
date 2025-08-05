@@ -2,13 +2,14 @@ from django.urls import path
 from .views import login_view, password_reset_link_view, send_login_link_view,signin_view, \
     PasswordReset_email_view,user_profile_view,\
     PasswordReset_email_view,password_reset_link_view,confirm_login_link_view,verify_phone_view,\
-    home,verify_reset_code_view,password_reset_confirm_view,index
+    home,verify_reset_code_view,password_reset_confirm_view,index,profile_view
 
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', index, name='index'),          # این باید صفحه‌ی index.html باشه
+    path('home/', home, name='home'),  # این فقط وقتی کاربر وارد می‌شه
+    path('profile/<slug:slug>/', profile_view, name='profile'),
     path('login/', login_view, name = 'login'),
-    path('home/', home, name ='home'),
     path('login/email/', send_login_link_view, name='send-login-link'),
     path('login/email/confirm/<str:token>/', password_reset_link_view, name='confirm-login-link'),
     path('signin/', signin_view, name='signin'),

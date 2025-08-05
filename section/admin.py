@@ -1,15 +1,22 @@
 from django.contrib import admin
 from adminsortable2.admin import SortableAdminMixin
 from .models import Section
-from .forms import SectionAdminForm # ایمپورت کردن فرم سفارشی
+from .forms import SectionAdminForm
 
 @admin.register(Section)
 class SectionAdmin(SortableAdminMixin, admin.ModelAdmin):
-    form = SectionAdminForm # استفاده از فرم سفارشی برای ولیدیشن‌ها
-    list_display = ['title', 'parent', 'get_level', 'order'] # نمایش level برای درک بهتر عمق
+    form = SectionAdminForm
+    list_display = ['title', 'parent', 'tree_order']
     list_filter = ['parent']
-    search_fields = ['title'] # اضافه کردن قابلیت جستجو بر اساس عنوان
 
-    def get_level(self, obj):
-        return obj.get_level()
-    get_level.short_description = "سطح" # نام ستون در پنل ادمین
+    def tree_order(self, obj):
+        parts = []
+        current = obj
+        while current:
+            siblings = list(Section.objects.filter(parent=current.parent).order_by('order'))
+            index = siblings.index(current) + 1
+            parts.insert(0, str(index))
+            current = current.parent
+        return ".".join(parts)
+
+    tree_order.short_description = "ترتیب"

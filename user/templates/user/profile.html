@@ -3,23 +3,72 @@
 {% block title %}پروفایل کاربر{% endblock %}
 
 {% block content %}
-  <div class="profile-box">
-    <h2>پروفایل کاربر</h2>
-    <div class="profile-info">
-      <span class="label">نام کاربری: </span>
-      <span class="value">{{ user_profile.username }}</span>
-    </div>
-    {% if user_profile.email %}
-      <div class="profile-info">
-        <span class="label">ایمیل: </span>
-        <span class="value">{{ user_profile.email }}</span>
-      </div>
-    {% endif %}
-    {% if user_profile.phone %}
-      <div class="profile-info">
-        <span class="label">شماره موبایل: </span>
-        <span class="value">{{ user_profile.phone }}</span>
-      </div>
-    {% endif %}
-      </div>
+<style>
+  .profile-box {
+    max-width: 500px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    font-family: 'Tahoma', sans-serif;
+    direction: rtl;
+    animation: fadeInProfile 0.8s ease forwards;
+  }
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+  }
+  .profile-info {
+    display: flex;
+    justify-content: space-between;
+    background: #f7f9fc;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #34495e;
+    box-shadow: 0 4px 8px rgba(52, 73, 94, 0.05);
+    transition: background-color 0.3s ease;
+  }
+  .profile-info:hover {
+    background-color: #eaf2f8;
+  }
+  .label {
+    font-weight: 700;
+  }
+  .value {
+    font-weight: 500;
+    color: #2980b9;
+  }
+
+  /* Animation */
+  @keyframes fadeInProfile {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="profile-box">
+  <h2>پروفایل کاربر</h2>
+  <div class="profile-info">
+    <span class="label">نام کاربری:</span>
+    <span class="value">{{ user_profile.username }}</span>
+  </div>
+
+  {% if user_profile.email %}
+  <div class="profile-info">
+    <span class="label">ایمیل:</span>
+    <span class="value">{{ user_profile.email }}</span>
+  </div>
+  {% endif %}
+
+  {% if user_profile.phone %}
+  <div class="profile-info">
+    <span class="label">شماره موبایل:</span>
+    <span class="value">{{ user_profile.phone }}</span>
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

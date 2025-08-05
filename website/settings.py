@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize' ,
     'section',
     'adminsortable2',
+    'ckeditor',
 
 ]
 

@@ -10,7 +10,9 @@ urlpatterns = [
     path('moderator-admin/', moderator_admin_site.urls),
     #path('comments/', include('comment_app.urls')),
     path('report/', include('report_app.urls')),
-    path('', include('user.urls')),
     path('accounts/', include('allauth.urls')),
+
+    path('', include('user.urls')),
+
 
 ]

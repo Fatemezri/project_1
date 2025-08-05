@@ -19,7 +19,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from import_export import resources, fields
 from .models import CustomUser
-from django.contrib.auth.models import Group
+from django.core.mail import send_mail
 
 
 class CustomUserResource(resources.ModelResource):
@@ -98,6 +98,8 @@ class CustomUserAdmin(ExportMixin, UserAdmin):
         'created_at',
         'updated_at',
     )
+
+
     readonly_fields = ('created_at', 'updated_at', 'slug')
 
     # اضافه کردن گروه‌ها و دسترسی‌ها به fieldsets:
@@ -132,36 +134,45 @@ class MassEmailAdmin(admin.ModelAdmin):
     list_display = ['subject', 'created_at']
     actions = ['send_email_to_all']
 
+    from django.core.mail import send_mail
+
     def send_email_to_all(self, request, queryset):
+        # فرض می‌کنیم یک ایمیل از queryset گرفته می‌شود که موضوع و متن را دارد
+        if not queryset.exists():
+            self.message_user(request, "هیچ ایمیلی انتخاب نشده است.", level=messages.WARNING)
+            return
+
+        mass_email = queryset.first()
 
         subject = mass_email.subject
-        html_message = mass_email.html_message
+        html_message = mass_email.html_message  # اگر HTML داری
         from_email = settings.DEFAULT_FROM_EMAIL
 
-        # همه کاربرانی که ایمیل دارند
-        recipients = CustomUser.objects.exclude(email='').values_list('email', flat=True)
+        # لیست ایمیل‌های کاربران که ایمیل دارند
+        recipients = list(CustomUser.objects.exclude(email='').values_list('email', flat=True))
 
         if not recipients:
             self.message_user(request, "هیچ کاربری با ایمیل معتبر یافت نشد.", level=messages.WARNING)
             return
 
-        # ساخت و ارسال ایمیل
-        email = EmailMessage(
-            subject=subject,
-            body=html_message,
-            from_email=from_email,
-            to=[],
-            bcc=recipients,  # ایمیل به صورت BCC ارسال شود تا لیست دیده نشود
-        )
-        email.content_subtype = "html"
+        # ارسال ایمیل به هر کاربر به صورت جداگانه (برای شخصی‌سازی و اطمینان)
+        success_count = 0
+        for email in recipients:
+            try:
+                send_mail(
+                    subject=subject,
+                    message=html_message,  # اگر متن ساده است، بکار ببر، اگر HTML داری باید EmailMessage استفاده کنی
+                    from_email=from_email,
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+                success_count += 1
+            except Exception as e:
+                # می‌توانی خطا را لاگ یا نمایش دهی
+                pass
 
-        try:
-            email.send()
-            self.message_user(request, f"{len(recipients)} ایمیل با موفقیت ارسال شد.", level=messages.SUCCESS)
-        except Exception as e:
-            self.message_user(request, f"خطا در ارسال ایمیل: {str(e)}", level=messages.ERROR)
+        self.message_user(request, f"{success_count} ایمیل با موفقیت ارسال شد.", level=messages.SUCCESS)
 
-    send_email_to_all.short_description = "ارسال ایمیل به همه کاربران"
 
 admin.site.register(MassEmail, MassEmailAdmin)
 
