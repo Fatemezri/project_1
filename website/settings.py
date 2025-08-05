@@ -195,63 +195,30 @@ SMS_IR_API_KEY = os.getenv("SMS_IR_API_KEY")
 SMS_IR_LINE_NUMBER = os.getenv("SMS_IR_LINE_NUMBER")
 SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
 
-
-
+LOG_DIR = BASE_DIR / 'logs'
+os.makedirs(LOG_DIR, exist_ok=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGGING = {
-
-
     'version': 1,
     'disable_existing_loggers': False,
-
-    'formatters': {
-        'verbose': {
-            'format': '[{levelname}] {asctime} ({name}) ▶ {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname}: {message}',
-            'style': '{',
-        },
-    },
-
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
-            'formatter': 'verbose',
-            'encoding': 'utf-8',
-        },
         'errors': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
-            'formatter': 'verbose',
-            'encoding': 'utf-8',
+            'filename': LOG_DIR / 'error.log',
         },
     },
-
     'loggers': {
         'django': {
-            'handlers': ['file', 'errors'],
-            'level': 'DEBUG',
+            'handlers': ['errors'],
+            'level': 'ERROR',
             'propagate': True,
         },
-        'user': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'ratelimit': {
-            'handlers': ['file', 'errors'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    }
+    },
 }
+
 
 
 
