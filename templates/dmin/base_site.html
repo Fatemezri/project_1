@@ -1,13 +1,32 @@
-{% extends "admin/index.html" %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>پیام جدید</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+    .notification {
+      background-color: #333;
+      padding: 12px;
+      border-right: 4px solid orange;
+      margin-bottom: 20px;
+    }
+    .notification strong {
+      color: gold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
 
-{% block content %}
-  {% if unread_count and unread_count > 0 and user.is_superuser %}
-    <div style="background-color: #333; padding: 12px; border-right: 4px solid orange; margin-bottom: 20px;">
-      <strong style="color: gold; font-size: 18px;">
-        📬 پیام جدید داری
-      </strong>
-    </div>
-  {% endif %}
-  {{ block.super }}
-{% endblock %}
+  <!-- شرط نمایش پیام (در HTML فقط نمادین است) -->
+  <div class="notification">
+    <strong>📬 پیام جدید داری</strong>
+  </div>
+
+</body>
+</html>
