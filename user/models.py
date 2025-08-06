@@ -2,23 +2,63 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django_jalali.db import models as jmodels
 from django.db import models
 from .signals import good_evening_email_sent_signal, good_evening_email_failed_signal
+from django.conf import settings
+
+class UserSecondPassword(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='second_password',
+        verbose_name=("کاربر")
+    )
+    hashed_password = models.CharField(
+        max_length=128,
+        verbose_name=("رمز عبور دوم ")
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=("تاریخ ایجاد")
+    )
+
+    class Meta:
+        verbose_name = ("رمز دوم کاربر")
+        verbose_name_plural = ("رمزهای دوم کاربران")
+
+    def __str__(self):
+        return f"رمز دوم برای {self.user.username}"
 
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email=None, phone=None, password=None, **extra_fields):
         if not email and not phone:
-            raise ValueError("شماره همراه یا ایمیل خود را وارد کنید")
+            raise ValueError("وارد کردن ایمیل یا شماره همراه الزامی است.")
+
         email = self.normalize_email(email)
-        user = self.model(username=username, email=email, phone=phone, **extra_fields)
-        user.set_password(password) #هش کردن رمز
+        user = self.model(
+            username=username,
+            email=email,
+            phone=phone,
+            **extra_fields
+        )
+        user.set_password(password)  # هش کردن رمز عبور
         user.save()
         return user
 
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
-        return self.create_user(username, email=email, password=password, **extra_fields)
 
+        if not extra_fields.get("is_staff"):
+            raise ValueError("مدیر باید دسترسی ادمین (is_staff=True) داشته باشد.")
+        if not extra_fields.get("is_superuser"):
+            raise ValueError("مدیر باید دسترسی کامل (is_superuser=True) داشته باشد.")
+
+        return self.create_user(
+            username,
+            email=email,
+            password=password,
+            **extra_fields
+        )
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -61,6 +101,17 @@ class MassEmail(models.Model):
 
     def __str__(self):
         return self.subject
+
+
+
+class UserSecondPassword(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='second_password')
+    hashed_password = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"SecondPassword for {self.user.username}"
+
 
 
 class MediaFile(models.Model):

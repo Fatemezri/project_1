@@ -6,45 +6,52 @@
 {% block content %}
 <style>
   form {
-    max-width: 400px;
+    max-width: 420px;
     margin: 2rem auto;
-    background: #fff;
+    background: #ffffff;
     padding: 2rem 2.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     font-family: Tahoma, sans-serif;
     direction: rtl;
-    animation: fadeInForm 0.8s ease forwards;
+    animation: fadeInForm 0.9s ease-out forwards;
   }
+
   h2 {
     text-align: center;
     color: #2c3e50;
     margin-bottom: 1.5rem;
   }
+
   label {
     display: block;
     margin-top: 1rem;
-    font-weight: 700;
+    font-weight: bold;
     color: #34495e;
+    font-size: 0.95rem;
   }
+
   input {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.6rem;
     margin-top: 0.3rem;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
   }
+
   input:focus {
     border-color: #3498db;
     outline: none;
   }
+
   .error {
     color: #e74c3c;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-top: 0.2rem;
   }
+
   .nonfield-error {
     background-color: #f8d7da;
     color: #721c24;
@@ -53,6 +60,7 @@
     margin-bottom: 1rem;
     text-align: center;
   }
+
   button[type="submit"] {
     margin-top: 1.8rem;
     width: 100%;
@@ -60,14 +68,16 @@
     background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
+
   button[type="submit"]:hover {
     background-color: #2980b9;
   }
+
   .google-btn {
     margin-top: 1rem;
     width: 100%;
@@ -75,30 +85,34 @@
     background-color: #db4437;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
     text-align: center;
     transition: background-color 0.3s ease;
   }
+
   .google-btn:hover {
     background-color: #b7362a;
   }
+
   p.text-center {
     text-align: center;
     margin-top: 1rem;
     color: #555;
   }
+
   a {
     color: #3498db;
     text-decoration: none;
   }
+
   a:hover {
     text-decoration: underline;
   }
 
   @keyframes fadeInForm {
-    from {opacity: 0; transform: translateY(20px);}
+    from {opacity: 0; transform: translateY(30px);}
     to {opacity: 1; transform: translateY(0);}
   }
 </style>
@@ -136,6 +150,19 @@
   <label for="{{ form.confirm_password.id_for_label }}">{{ form.confirm_password.label }}</label>
   {{ form.confirm_password }}
   {% for error in form.confirm_password.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
+
+  <!-- 🆕 رمز دوم -->
+  <label for="{{ form.second_password.id_for_label }}">{{ form.second_password.label }}</label>
+  {{ form.second_password }}
+  {% for error in form.second_password.errors %}
+    <div class="error">{{ error }}</div>
+  {% endfor %}
+
+  <label for="{{ form.confirm_second_password.id_for_label }}">{{ form.confirm_second_password.label }}</label>
+  {{ form.confirm_second_password }}
+  {% for error in form.confirm_second_password.errors %}
     <div class="error">{{ error }}</div>
   {% endfor %}
 

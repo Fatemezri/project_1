@@ -1,5 +1,3 @@
-
-
 import logging
 logger = logging.getLogger('user')
 from .forms import signinForm
@@ -23,9 +21,14 @@ from comment_app.forms import CommentForm
 from comment_app.models import Comment
 from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
+from .models import UserSecondPassword
 
 
-
+def custom_simple_hash(password, salt='mysalt'):
+    hashed = ''
+    for i, c in enumerate(password + salt):
+        hashed += chr((ord(c) + i) % 126)
+    return hashed.encode('utf-8').hex()
 
 
 def index(request):
@@ -205,12 +208,29 @@ def signin_view(request):
             email = form.cleaned_data.get('email')
             phone = form.cleaned_data.get('phone')
             password = form.cleaned_data['password']
+            second_password = form.cleaned_data['second_password']
+
+            # بررسی ایمیل تکراری
+            if email and CustomUser.objects.filter(email=email).exists():
+                messages.error(request, "کاربری با این ایمیل قبلاً ثبت‌نام کرده است.")
+                logger.warning("ایمیل تکراری هنگام ثبت‌نام: " + email)
+                return render(request, 'user/sign_in.html', {'form': form})
+
             logger.info(f"🆕 New registration: {username}")
 
+            # ۱. ساخت کاربر
             user = CustomUser(username=username, email=email, phone=phone)
             user.set_password(password)
             user.save()
 
+            # ۲. هش کردن رمز دوم و ذخیره
+            hashed_second_password = custom_simple_hash(second_password)
+            UserSecondPassword.objects.create(
+                user=user,
+                hashed_password=hashed_second_password
+            )
+
+            # ۳. ارسال پیامک یا ایمیل
             if phone:
                 logger.info(f"📲 Welcome SMS sent to {phone}")
                 send_verification_sms(phone, "ثبت‌نام شما با موفقیت انجام شد.")
@@ -226,12 +246,12 @@ def signin_view(request):
 
             messages.success(request, 'ثبت‌نام با موفقیت انجام شد. اکنون می‌توانید وارد شوید.')
             return redirect('login')
+        else:
+            logger.warning("فرم ثبت‌نام نامعتبر بود.")
     else:
         form = signinForm()
 
     return render(request, 'user/sign_in.html', {'form': form})
-
-
 
 
 def profile_view(request, slug):
@@ -432,7 +452,3 @@ def password_reset_confirm_view(request):
         form = PasswordChangeForm()
 
     return render(request, 'user/password_reset.html', {'form': form})
-
-
-
-

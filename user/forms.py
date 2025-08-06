@@ -1,18 +1,47 @@
-
-
 from django.contrib.auth import get_user_model
 user = get_user_model()
+from django.core.validators import validate_email
+from ckeditor.widgets import CKEditorWidget
+import hashlib
+import logging
+from django import forms
 from django.core.exceptions import ValidationError
 from .models import CustomUser
-from django.core.validators import validate_email
 import re
+from .models import MediaFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
+from PIL import Image
+from .utils import upload_file_to_arvan, delete_file_from_arvan
+
+
+logger = logging.getLogger(__name__)
+
+
+
 from django import forms
 from ckeditor.widgets import CKEditorWidget
 
-
 class SendEmailForm(forms.Form):
-    subject = forms.CharField(max_length=255)
-    body = forms.CharField(widget=CKEditorWidget())
+    subject = forms.CharField(
+        max_length=255,
+        label="عنوان ایمیل",
+        help_text="مثلاً: خوش‌آمدگویی به کاربر جدید",
+        error_messages={
+            'required': 'لطفاً عنوان ایمیل را وارد کنید.',
+            'max_length': 'عنوان ایمیل نمی‌تواند بیش از ۲۵۵ کاراکتر باشد.',
+        }
+    )
+
+    body = forms.CharField(
+        widget=CKEditorWidget(),
+        label="متن ایمیل",
+        help_text="متن کامل ایمیل را با استفاده از ویرایشگر وارد کنید.",
+        error_messages={
+            'required': 'متن ایمیل نمی‌تواند خالی باشد.',
+        }
+    )
+
 
 
 class LoginForm(forms.Form):
@@ -54,6 +83,8 @@ class LoginForm(forms.Form):
         raise forms.ValidationError("شماره موبایل/ایمیل معتبر نیست.")
 
 
+
+
 class signinForm(forms.ModelForm):
     contact = forms.CharField(
         label='ایمیل/شماره همراه',
@@ -62,39 +93,89 @@ class signinForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'placeholder': '...ایمیل یا شماره'})
     )
     password = forms.CharField(
-        label='رمز عبور',
+        label='رمز عبور اول',
         required=True,
-        widget=forms.PasswordInput(attrs={'placeholder': 'رمز عبور'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'رمز اول'})
     )
     confirm_password = forms.CharField(
-        label='تکرار رمز عبور',
+        label='تکرار رمز عبور اول',
         required=True,
-        widget=forms.PasswordInput(attrs={'placeholder': 'تکرار رمز عبور'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'تکرار رمز اول'})
+    )
+    second_password = forms.CharField(
+        label='رمز دوم',
+        required=True,
+        widget=forms.PasswordInput(attrs={'placeholder': 'رمز دوم'})
+    )
+    confirm_second_password = forms.CharField(
+        label='تکرار رمز دوم',
+        required=True,
+        widget=forms.PasswordInput(attrs={'placeholder': 'تکرار رمز دوم'})
     )
 
     class Meta:
         model = CustomUser
         fields = ['username']
 
+
+
     def clean(self):
         cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        confirm = cleaned_data.get("confirm_password")
         contact = cleaned_data.get("contact")
 
-        if password and confirm and password != confirm:
-            raise ValidationError("رمز عبور و تکرار آن یکسان نیستند")
+        if '@' in contact:
+            cleaned_data['email'] = contact
+            cleaned_data['phone'] = None
+            if CustomUser.objects.filter(email=contact).exists():
+                raise ValidationError("کاربری با این ایمیل قبلاً ثبت‌نام کرده است.")
+        elif re.match(r'^09\d{9}$', contact):
+            cleaned_data['phone'] = contact
+            cleaned_data['email'] = None
+            if CustomUser.objects.filter(phone=contact).exists():
+                raise ValidationError("کاربری با این شماره همراه قبلاً ثبت‌نام کرده است.")
 
+        password1 = cleaned_data.get("password")
+        password2 = cleaned_data.get("confirm_password")
+        second1 = cleaned_data.get("second_password")
+        second2 = cleaned_data.get("confirm_second_password")
+        contact = cleaned_data.get("contact")
+
+        # بررسی رمز اول
+        if password1 and password2 and password1 != password2:
+            logger.warning("رمز اول و تکرارش یکی نیستند.")
+            raise ValidationError("رمز اول و تکرار آن یکسان نیستند.")
+
+        # بررسی رمز دوم
+        if second1 and second2:
+            if second1 != second2:
+                logger.warning("رمز دوم و تکرارش یکی نیستند.")
+                raise ValidationError("رمز دوم و تکرار آن یکسان نیستند.")
+        else:
+            logger.warning("رمز دوم وارد نشده.")
+            raise ValidationError("وارد کردن رمز دوم الزامی است.")
+
+        # بررسی شماره یا ایمیل
         if contact:
             if '@' in contact:
                 cleaned_data['email'] = contact
                 cleaned_data['phone'] = None
-            elif re.match(r'^09\d{9}$', contact):  # شماره موبایل ایرانی
+            elif re.match(r'^09\d{9}$', contact):
                 cleaned_data['phone'] = contact
                 cleaned_data['email'] = None
             else:
+                logger.warning("ایمیل یا شماره همراه معتبر نیست.")
                 raise ValidationError("ایمیل یا شماره همراه معتبر نیست")
+
+        logger.info("اعتبارسنجی فرم ثبت‌نام با موفقیت انجام شد.")
         return cleaned_data
+
+    def get_hashed_second_password(self):
+        second_password = self.cleaned_data.get("second_password")
+        if second_password:
+            hashed = hashlib.sha256(second_password.encode()).hexdigest()
+            logger.info("رمز دوم با موفقیت هش شد.")
+            return hashed
+        return None
 
 
 
@@ -146,13 +227,6 @@ class PasswordChangeForm(forms.Form):
         return cleaned_data
 
 
-
-from django import forms
-from .models import MediaFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from io import BytesIO
-from PIL import Image
-from .utils import upload_file_to_arvan, delete_file_from_arvan
 
 
 class MediaFileAdminForm(forms.ModelForm):
@@ -215,5 +289,3 @@ class MediaFileAdminForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
-
-

@@ -20,7 +20,7 @@ urlpatterns = [
     path('verify-phone/', verify_phone_view, name='verify-phone'),
     path('password/verify-code/', verify_reset_code_view, name='password-verify-code'),
     path('password/verify_reset_code', verify_reset_code_view, name= 'verify_reset_code'),
-    path('password/reset/confirm/', password_reset_confirm_view, name='password-reset-confirm')
+    path('password/reset/confirm/', password_reset_confirm_view, name='password-reset-confirm'),
 
 ]
 

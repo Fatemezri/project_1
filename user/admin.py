@@ -1,5 +1,4 @@
 from django.contrib import  messages
-from django.core.mail import EmailMessage
 from .models import MassEmail
 from .models import MediaFile
 from .forms import MediaFileAdminForm
@@ -20,6 +19,16 @@ from reportlab.pdfbase.ttfonts import TTFont
 from import_export import resources, fields
 from .models import CustomUser
 from django.core.mail import send_mail
+from django.contrib import admin
+from .models import UserSecondPassword  # اگر مسیرش فرق داره، اصلاح کن
+
+
+class UserSecondPasswordAdmin(admin.ModelAdmin):
+    list_display = ('user', 'created_at')
+    readonly_fields = ('user',)
+
+admin.site.register(UserSecondPassword, UserSecondPasswordAdmin)
+
 
 
 class CustomUserResource(resources.ModelResource):
@@ -207,8 +216,3 @@ class MediaFileAdmin(admin.ModelAdmin):
 
 
 admin.site.register(MediaFile, MediaFileAdmin)
-
-
-
-
-
