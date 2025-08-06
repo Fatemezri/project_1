@@ -1,41 +1,13 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/index.html" %}
 {% load static %}
-{% load i18n %}
 
-{% block branding %}
-  {{ block.super }}
-  {% if request.user.is_superuser %}
-    <style>
-      .notification-bell {
-        display: inline-block;
-        position: relative;
-        margin-left: 20px;
-      }
-
-      .notification-bell .count {
-        position: absolute;
-        top: -5px;
-        right: -10px;
-        background: red;
-        color: white;
-        border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 10px;
-      }
-
-      .notification-bell i {
-        font-size: 18px;
-        color: #FFD700;
-      }
-    </style>
-
-    <div class="notification-bell">
-      <a href="{% url 'admin:report_app_message_changelist' %}?is_read__exact=0" title="گزارش‌های خوانده‌نشده">
-        <i class="fas fa-bell"></i>
-        {% if unread_count > 0 %}
-          <span class="count">{{ unread_count }}</span>
-        {% endif %}
-      </a>
+{% block content %}
+  {% if unread_count and unread_count > 0 and user.is_superuser %}
+    <div style="background-color: #333; padding: 12px; border-right: 4px solid orange; margin-bottom: 20px;">
+      <strong style="color: gold; font-size: 18px;">
+        📬 پیام جدید داری
+      </strong>
     </div>
   {% endif %}
+  {{ block.super }}
 {% endblock %}
