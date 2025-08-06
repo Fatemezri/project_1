@@ -33,7 +33,7 @@ def index(request):
 
 def home(request):
     form = CommentForm()
-    comments = Comment.objects.filter(status='approved')
+    comments = Comment.objects.filter(is_approved=True)
 
     if request.method == 'POST':
         form = CommentForm(request.POST)

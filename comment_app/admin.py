@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Comment
-
+from django.utils.html import format_html
 
 # ثبت مدل کامنت در پنل ادمین
 @admin.register(Comment)
@@ -9,6 +9,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ('is_approved', 'created_at')
     search_fields = ('user__username', 'content')
     actions = ['approve_comments']
+    readonly_fields = ('user',)
+
 
     def approve_comments(self, request, queryset):
         queryset.update(is_approved=True)
@@ -16,9 +18,28 @@ class CommentAdmin(admin.ModelAdmin):
 
     approve_comments.short_description = "تایید کامنت‌های انتخاب شده"
 
-    # فقط کامنت‌های تایید نشده را برای سوپریوزرها در پنل ادمین پیش‌فرض نمایش می‌دهد
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.groups.filter(name='MessageAdmins').exists()
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if not request.user.is_superuser:
-            return qs.none()  # سایر ادمین‌ها را از دیدن این موارد محدود می‌کند
+            return qs  # Show all comments to moderators, approved and unapproved
         return qs
+
+    def approval_status(self, obj):
+        if obj.is_approved:
+            return format_html('<span style="color: green;">✔ تایید شده</span>')
+        return format_html('<span style="color: red;">✘ نیاز به تایید</span>')
+
+    approval_status.short_description = 'وضعیت تایید'

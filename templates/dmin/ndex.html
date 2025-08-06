@@ -1,0 +1,18 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+  {% if unread_messages_count %}
+    <div class="messages">
+      <ul class="messagelist">
+        <li class="info" style="background-color: #444; color: yellow; padding: 10px;">
+          📫 <strong>پیام جدید داری</strong>
+          <a href="{% url 'superuser_messages' %}" style="margin-right: 12px; color: #fff; text-decoration: underline;">
+            مشاهده پیام‌ها
+          </a>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+
+  {{ block.super }}
+{% endblock %}
