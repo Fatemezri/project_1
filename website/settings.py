@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from celery.schedules import crontab
 
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
@@ -196,26 +197,40 @@ SMS_IR_API_KEY = os.getenv("SMS_IR_API_KEY")
 SMS_IR_LINE_NUMBER = os.getenv("SMS_IR_LINE_NUMBER")
 SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
 
-LOG_DIR = BASE_DIR / 'logs'
-os.makedirs(LOG_DIR, exist_ok=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'errors': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': LOG_DIR / 'error.log',
+
+    'formatters': {
+        'simple': {
+            'format': '[{levelname}] {asctime} {name}: {message}',
+            'style': '{',
         },
     },
+
+    'handlers': {
+        'user_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': LOG_DIR / 'user.log',
+            'formatter': 'simple',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+
     'loggers': {
-        'django': {
-            'handlers': ['errors'],
-            'level': 'ERROR',
-            'propagate': True,
+        'user': {
+            'handlers': ['user_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }

@@ -5,9 +5,8 @@ import boto3
 from django.conf import settings
 from botocore.exceptions import ClientError
 import logging
+logger = logging.getLogger('user')
 
-# Logging setup (no need for utf-8 since logs are now ASCII only)
-logging.basicConfig(level=logging.INFO)
 
 
 def generate_token(email):
@@ -30,10 +29,9 @@ def fa_to_en_numbers(s):
     return s
 
 def send_verification_sms(phone_number, code):
-    # Convert Persian digits to English
     phone_number = fa_to_en_numbers(phone_number).strip()
 
-    # Phone number must start with 09 and be 11 digits
+
     if phone_number.startswith('0') and len(phone_number) == 11:
         sms_ir = SmsIr(
             api_key=settings.SMS_IR_API_KEY,
@@ -44,12 +42,12 @@ def send_verification_sms(phone_number, code):
 
         try:
             sms_ir.send_verify_code(phone_number, template_id, parameters)
-            logging.info(f"Verification code {code} sent to {phone_number}")
+            logger.info(f"Verification code {code} sent to {phone_number}.")
         except Exception as e:
-            logging.error("Error sending SMS: %s", e)
+            logger.error(f"Error sending SMS to {phone_number}: {e}")
             raise e
     else:
-        logging.warning("Invalid phone number: %s", phone_number)
+        logger.warning(f"Invalid phone number: {phone_number}")
         raise ValueError("Invalid phone number.")
 
 session = boto3.session.Session()
@@ -65,17 +63,19 @@ BUCKET_NAME = settings.ARVAN_BUCKET
 def upload_file_to_arvan(file_obj, key):
     try:
         client.upload_fileobj(file_obj, BUCKET_NAME, key)
+        logger.info(f"File uploaded to Arvan successfully: {key}")
         return True
     except Exception as e:
-        logging.error("Upload error: %s", e)
+        logger.error(f"File upload error [{key}]: {e}")
         return False
 
 def delete_file_from_arvan(key):
     try:
         if key:
             client.delete_object(Bucket=BUCKET_NAME, Key=key)
+            logger.info(f"File deleted from Arvan: {key}")
     except Exception as e:
-        logging.error("Delete error: %s", e)
+        logger.error(f"File deletion error [{key}]: {e}")
 
 def generate_presigned_url(key, expiration=3600):
     try:
@@ -84,7 +84,8 @@ def generate_presigned_url(key, expiration=3600):
             Params={'Bucket': BUCKET_NAME, 'Key': key},
             ExpiresIn=expiration,
         )
+        logger.info(f"Generated presigned URL for: {key}")
         return url
     except ClientError as e:
-        logging.error("URL error: %s", e)
+        logger.error(f"Error generating presigned URL for [{key}]: {e}")
         return None
