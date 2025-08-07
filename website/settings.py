@@ -203,7 +203,7 @@ SMS_IR_TEMPLATE_ID = os.getenv("SMS_IR_TEMPLATE_ID")
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOG_DIR = Path('/home/fhmmeuob/public_html/ftm.erfann31dev.ir/logs')
+LOG_DIR = BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 
 LOGGING = {
