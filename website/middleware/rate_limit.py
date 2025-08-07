@@ -8,7 +8,7 @@ logger = logging.getLogger('ratelimit')
 class RateLimitMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.max_requests = 100
+        self.max_requests = 5
         self.duration = 60 * 5
         self.block_duration = 60 * 2
 
