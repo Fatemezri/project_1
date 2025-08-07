@@ -5,15 +5,15 @@ import logging
 logger = logging.getLogger('comment')
 
 
-# ثبت مدل کامنت در پنل ادمین
+
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'content', 'is_approved', 'created_at')
+    list_display = ('user', 'is_approved', 'created_at')
     list_filter = ('is_approved', 'created_at')
     search_fields = ('user__username', 'content')
     actions = ['approve_comments']
     readonly_fields = ('user',)
-
+    fields = ('content', 'is_approved')
 
     def approve_comments(self, request, queryset):
         queryset.update(is_approved=True)
