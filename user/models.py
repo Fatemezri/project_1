@@ -3,6 +3,8 @@ from django_jalali.db import models as jmodels
 from django.db import models
 from .signals import good_evening_email_sent_signal, good_evening_email_failed_signal
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 
 class UserSecondPassword(models.Model):
     user = models.OneToOneField(
@@ -21,8 +23,8 @@ class UserSecondPassword(models.Model):
     )
 
     class Meta:
-        verbose_name = ("رمز دوم کاربر")
-        verbose_name_plural = ("رمزهای دوم کاربران")
+        verbose_name = _("رمز دوم کاربر")
+        verbose_name_plural = _("رمزهای دوم کاربران")
 
     def __str__(self):
         return f"رمز دوم برای {self.user.username}"

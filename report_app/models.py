@@ -20,3 +20,7 @@ class Message(models.Model):
 
     def __str__(self):
         return f'پیام از {self.sender.username} به {self.recipient.username}'
+
+    class Meta:
+        verbose_name = 'پیام'
+        verbose_name_plural = 'پیام‌ها'
