@@ -68,6 +68,12 @@ INSTALLED_APPS = [
     'adminsortable2',
     'ckeditor',
     'django_pwned_passwords',
+
+]
+
+
+CRON_CLASSES = [
+    'user.cron.EveningGreetingCronJob',
 ]
 
 
@@ -252,6 +258,12 @@ LOGGING = {
             'filename': str(LOG_DIR / 'moderator_admin.log'),  # مسیر فایل لاگ
             'formatter': 'simple',
         },
+        'email_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'email.log',  # مطمئن شو این مسیر وجود داره
+            'formatter': 'simple',
+        },
 
     },
 
@@ -285,6 +297,11 @@ LOGGING = {
             'handlers': ['moderator_file'],
             'level': 'INFO',
             'propagate': False,
+        },
+        'django': {
+            'handlers': ['email_file'],
+            'level': 'INFO',
+            'propagate': True,
         },
     },
 }
