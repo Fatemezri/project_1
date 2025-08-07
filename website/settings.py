@@ -220,47 +220,47 @@ LOGGING = {
     'handlers': {
         'user_file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': str(LOG_DIR / 'user.log'),
             'formatter': 'simple',
         },
         'report_file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': str(LOG_DIR / 'report_app.log'),
             'formatter': 'simple',
         },
         'console': {
-            'class': 'logging.StreamHandler',
+            'class': 'logging.StreamHandler',  # ← درستش اینه
             'formatter': 'simple',
         },
         'comment_file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': str(LOG_DIR / 'comment_app.log'),
             'formatter': 'simple',
         },
         'section_file': {
              'level': 'INFO',
-             'class': 'logging.FileHandler',
+             'class': 'logging.handlers.WatchedFileHandler',
              'filename': str(LOG_DIR / 'section_app.log'),
             'formatter': 'simple',
         },
         'ratelimit_file': {
             'level': 'INFO',  # یا DEBUG اگر می‌خوای لاگ‌های دقیق‌تر ثبت شه
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': str(LOG_DIR / 'ratelimit.log'),
             'formatter': 'simple',
         },
         'moderator_file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': str(LOG_DIR / 'moderator_admin.log'),  # مسیر فایل لاگ
             'formatter': 'simple',
         },
         'email_file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': str(BASE_DIR / 'logs' / 'email.log'),  # مطمئن شو این مسیر وجود داره
             'formatter': 'simple',
         },
