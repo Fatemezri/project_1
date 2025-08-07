@@ -261,7 +261,7 @@ LOGGING = {
         'email_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'email.log',  # مطمئن شو این مسیر وجود داره
+            'filename': str(BASE_DIR / 'logs' / 'email.log'),  # مطمئن شو این مسیر وجود داره
             'formatter': 'simple',
         },
 
