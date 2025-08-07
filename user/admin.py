@@ -20,7 +20,7 @@ from import_export import resources, fields
 from .models import CustomUser
 from django.core.mail import send_mail
 from django.contrib import admin
-from .models import UserSecondPassword  # اگر مسیرش فرق داره، اصلاح کن
+from .models import UserSecondPassword
 import logging
 logger = logging.getLogger("user")
 from django.utils.html import format_html
@@ -35,7 +35,7 @@ admin.site.register(UserSecondPassword, UserSecondPasswordAdmin)
 
 
 class CustomUserResource(resources.ModelResource):
-    username = fields.Field(column_name='نام کاربری', attribute='تام کاربری')
+    username = fields.Field(column_name='نام کاربری', attribute='username')
     phone = fields.Field(column_name='شماره همراه', attribute='phone')
     email = fields.Field(column_name='ایمیل', attribute='email')
     is_active = fields.Field(column_name='وضعیت فعال', attribute='is_active')
@@ -96,8 +96,6 @@ export_users_to_pdf.short_description = "📄 خروجی PDF فارسی"
 
 
 
-# ✅ ادمین کاربر# from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import Group
 
 class CustomUserAdmin(ExportMixin, UserAdmin):
     resource_class = CustomUserResource
