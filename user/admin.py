@@ -21,6 +21,9 @@ from .models import CustomUser
 from django.core.mail import send_mail
 from django.contrib import admin
 from .models import UserSecondPassword  # اگر مسیرش فرق داره، اصلاح کن
+import logging
+logger = logging.getLogger("user")
+from django.utils.html import format_html
 
 
 class UserSecondPasswordAdmin(admin.ModelAdmin):
@@ -135,7 +138,7 @@ class CustomUserAdmin(ExportMixin, UserAdmin):
 
     actions = [export_users_to_pdf]
 
-# ثبت در پنل ادمین
+
 admin.site.register(CustomUser, CustomUserAdmin)
 
 
@@ -146,9 +149,9 @@ class MassEmailAdmin(admin.ModelAdmin):
     from django.core.mail import send_mail
 
     def send_email_to_all(self, request, queryset):
-        # فرض می‌کنیم یک ایمیل از queryset گرفته می‌شود که موضوع و متن را دارد
         if not queryset.exists():
             self.message_user(request, "هیچ ایمیلی انتخاب نشده است.", level=messages.WARNING)
+            logger.warning("Mass email sending aborted: No MassEmail selected.")
             return
 
         mass_email = queryset.first()
@@ -157,36 +160,36 @@ class MassEmailAdmin(admin.ModelAdmin):
         html_message = mass_email.html_message  # اگر HTML داری
         from_email = settings.DEFAULT_FROM_EMAIL
 
-        # لیست ایمیل‌های کاربران که ایمیل دارند
+
         recipients = list(CustomUser.objects.exclude(email='').values_list('email', flat=True))
 
         if not recipients:
             self.message_user(request, "هیچ کاربری با ایمیل معتبر یافت نشد.", level=messages.WARNING)
+            logger.warning("Mass email sending aborted: No users with valid emails.")
             return
 
-        # ارسال ایمیل به هر کاربر به صورت جداگانه (برای شخصی‌سازی و اطمینان)
+
         success_count = 0
         for email in recipients:
             try:
                 send_mail(
                     subject=subject,
-                    message=html_message,  # اگر متن ساده است، بکار ببر، اگر HTML داری باید EmailMessage استفاده کنی
+                    message=html_message,
                     from_email=from_email,
                     recipient_list=[email],
                     fail_silently=False,
                 )
+                logger.info(f"Mass email sent to {email} with subject '{subject}'.")
                 success_count += 1
             except Exception as e:
-                # می‌توانی خطا را لاگ یا نمایش دهی
-                pass
+                logger.error(f"Error sending mass email to {email}: {e}")
 
         self.message_user(request, f"{success_count} ایمیل با موفقیت ارسال شد.", level=messages.SUCCESS)
-
+        logger.info(f"Mass email process completed. Successfully sent: {success_count} of {len(recipients)} users.")
 
 admin.site.register(MassEmail, MassEmailAdmin)
 
 
-from django.utils.html import format_html
 
 
 

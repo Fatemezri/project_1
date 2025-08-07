@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'user',
-    'sms',
-    'Email',
     'jdatetime',
     'django_jalali',
     'django_ckeditor_5',
@@ -217,18 +215,74 @@ LOGGING = {
         'user_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': LOG_DIR / 'user.log',
+            'filename': str(LOG_DIR / 'user.log'),
+            'formatter': 'simple',
+        },
+        'report_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_DIR / 'report_app.log'),
             'formatter': 'simple',
         },
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        'comment_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_DIR / 'comment_app.log'),
+            'formatter': 'simple',
+        },
+        'section_file': {
+             'level': 'INFO',
+             'class': 'logging.FileHandler',
+             'filename': str(LOG_DIR / 'section_app.log'),
+            'formatter': 'simple',
+        },
+        'ratelimit_file': {
+            'level': 'INFO',  # یا DEBUG اگر می‌خوای لاگ‌های دقیق‌تر ثبت شه
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_DIR / 'ratelimit.log'),
+            'formatter': 'simple',
+        },
+        'moderator_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_DIR / 'moderator_admin.log'),  # مسیر فایل لاگ
+            'formatter': 'simple',
+        },
+
     },
 
     'loggers': {
         'user': {
-            'handlers': ['user_file', 'console'],
+            'handlers': ['user_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'report': {
+            'handlers': ['report_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'comment': {
+             'handlers': ['comment_file'],
+             'level': 'INFO',
+             'propagate': False,
+        },
+        'section': {
+            'handlers': ['section_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'ratelimit': {
+            'level': 'INFO',  # یا DEBUG
+            'handlers': ['ratelimit_file'],
+            'propagate': False,
+        },
+        'moderator_admin': {
+            'handlers': ['moderator_file'],
             'level': 'INFO',
             'propagate': False,
         },

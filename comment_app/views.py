@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 User = get_user_model()
+import logging
+logger = logging.getLogger('comment')
 
 def is_message_admin(user):
     """تابع کمکی برای بررسی اینکه آیا کاربر مدیر پیام است یا خیر."""
@@ -22,6 +24,10 @@ def submit_comment(request):
             if is_message_admin(request.user):
                 comment.is_approved = True
             comment.save()
+            logger.info(
+                f"New comment submitted by user: {request.user.username} | Approved: {comment.is_approved} | Content: {comment.text[:50]}"
+            )
+
             return redirect('comment_success')
     else:
         form = CommentForm()

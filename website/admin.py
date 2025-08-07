@@ -7,9 +7,11 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 User = get_user_model()
+import logging
+logger = logging.getLogger('moderator_admin')
 
 
-# ایجاد یک کلاس AdminSite سفارشی برای پنل مدیریت مدیران
+
 class ModeratorAdminSite(admin.AdminSite):
     site_header = "پنل مدیریت مدیران"
     site_title = "پنل مدیریت مدیران"
@@ -18,21 +20,20 @@ class ModeratorAdminSite(admin.AdminSite):
     index_template = 'moderator_admin/index.html'
 
     def has_permission(self, request: HttpRequest) -> bool:
-        """
-        این متد بررسی می‌کند که آیا کاربر ناظر و دارای مجوزهای لازم است.
-        فقط کاربرانی که is_staff هستند، سوپریوزر نیستند و مجوزهای مشخصی دارند، اجازه دسترسی دارند.
-        """
+
         user = request.user
 
-        # بررسی اینکه آیا کاربر فعال و از نوع staff است.
+
         if not (user.is_active and user.is_staff):
+            logger.warning(f"Access denied for inactive or non-staff user: {user}")
             return False
 
-        # بررسی اینکه آیا کاربر سوپریوزر است. اگر باشد، اجازه دسترسی ندارد.
+
         if user.is_superuser:
+            logger.warning(f"Access denied for superuser: {user}")
             return False
 
-        # بررسی مجوزهای مشخص برای کامنت‌ها
+        logger.info(f"Access granted to moderator: {user}")
         return (
                 user.has_perm('comment_app.add_comment') or
                 user.has_perm('comment_app.change_comment') or
@@ -40,11 +41,11 @@ class ModeratorAdminSite(admin.AdminSite):
         )
 
 
-# ایجاد نمونه‌ای از سایت ادمین سفارشی برای مدیران
+
 moderator_admin_site = ModeratorAdminSite(name='moderator_admin')
 
 
-# کلاس Admin سفارشی برای کامنت‌ها در پنل مدیران
+
 @admin.register(Comment, site=moderator_admin_site)
 class CommentModeratorAdmin(admin.ModelAdmin):
     list_display = ('user', 'content', 'is_approved', 'created_at')
@@ -53,12 +54,13 @@ class CommentModeratorAdmin(admin.ModelAdmin):
     actions = ['approve_comments']
 
     def approve_comments(self, request, queryset):
-        queryset.update(is_approved=True)
+        count=queryset.update(is_approved=True)
+        logger.info(f"{count} comments approved by moderator: {request.user}")
         self.message_user(request, "کامنت‌های انتخاب شده تایید شدند.", level=messages.SUCCESS)
 
     approve_comments.short_description = "تایید کامنت‌های انتخاب شده"
 
-    # فقط کامنت‌های تایید نشده را نمایش می‌دهد
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(is_approved=False)
@@ -93,32 +95,28 @@ class MessageModeratorAdmin(admin.ModelAdmin):
         return False  # عدم اجازه حذف
 
     def has_view_permission(self, request, obj=None):
-        # اجازه مشاهده فقط برای پیام‌هایی که خودشان ارسال کرده‌اند
         return obj is None or obj.sender == request.user
 
-    # فقط فیلد محتوا را در فرم اضافه کردن پیام نمایش می‌دهد
     def get_form(self, request, obj=None, **kwargs):
         if obj is None:
             kwargs['fields'] = ['content']
         return super().get_form(request, obj, **kwargs)
 
-    # به صورت خودکار فرستنده را به کاربر فعلی و گیرنده را به یک سوپریوزر خاص تنظیم می‌کند
+
     def save_model(self, request, obj, form, change):
         if not change:
             obj.sender = request.user
             try:
-                # بسیار مهم: اطمینان حاصل کنید که یک سوپریوزر با نام کاربری 'fateme' ایجاد کرده‌اید.
-                # در غیر این صورت، پیام‌ها به هیچ کاربری ارسال نمی‌شوند.
+
                 superuser = User.objects.get(username='fateme')
-                # گیرنده را به سوپریوزر پیدا شده تنظیم می‌کند
                 obj.recipient = superuser
-                # کامنت اصلی را با مقادیر پر شده ذخیره می‌کند
+                logger.info(f"New message created by {request.user} for superuser {superuser}")
                 super().save_model(request, obj, form, change)
             except User.DoesNotExist:
-                # اگر سوپریوزر پیدا نشد، یک پیام هشدار نمایش می‌دهد و پیام را ذخیره نمی‌کند
+                logger.error("Superuser 'fateme' does not exist. Message not saved.")
                 self.message_user(request, "کاربر 'fateme' به عنوان سوپریوزر وجود ندارد. پیام ارسال نشد.",
                                   level=messages.WARNING)
         else:
-            # برای ویرایش، رفتار پیش‌فرض را اجرا می‌کند
+            logger.info(f"Message edited by {request.user}")
             super().save_model(request, obj, form, change)
 

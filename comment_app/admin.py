@@ -1,6 +1,9 @@
 from django.contrib import admin
 from .models import Comment
 from django.utils.html import format_html
+import logging
+logger = logging.getLogger('comment')
+
 
 # ثبت مدل کامنت در پنل ادمین
 @admin.register(Comment)
@@ -15,6 +18,9 @@ class CommentAdmin(admin.ModelAdmin):
     def approve_comments(self, request, queryset):
         queryset.update(is_approved=True)
         self.message_user(request, "کامنت‌های انتخاب شده تایید شدند.")
+
+        for comment in queryset:
+            logger.info(f"Comment approved by {request.user.username}: {comment.id} by {comment.user.username}")
 
     approve_comments.short_description = "تایید کامنت‌های انتخاب شده"
 

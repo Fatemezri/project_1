@@ -6,7 +6,8 @@ from django.conf import settings
 from .models import Comment
 
 User = get_user_model()
-
+import logging
+logger = logging.getLogger('comment')
 
 @receiver(post_save, sender=Comment)
 def notify_superusers_on_new_comment(sender, instance, created, **kwargs):
@@ -19,3 +20,6 @@ def notify_superusers_on_new_comment(sender, instance, created, **kwargs):
 
         if superuser_emails:
             send_mail(subject, message, from_email, superuser_emails, fail_silently=False)
+            logger.info(
+                f"Notification email sent to superusers for new unapproved comment by {instance.user.username}"
+            )

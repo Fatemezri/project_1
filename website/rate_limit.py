@@ -12,13 +12,15 @@ class RateLimitMiddleware:
         self.duration = 60 * 5
         self.block_duration = 60 * 2
 
+        logger.info("RateLimitMiddleware initialized.")
+
     def __call__(self, request):
         ip = self.get_client_ip(request)
         cache_key = f"rate_limit_{ip}"
         block_key = f"block_ip_{ip}"
 
         if cache.get(block_key):
-            logger.warning(f"Blocked IP tried access: {ip}")
+            logger.warning(f"[BLOCKED ACCESS] IP {ip} is currently blocked from making requests.")
             return HttpResponseForbidden("⛔ شما برای ۲ دقیقه مسدود شده‌اید. لطفاً بعداً تلاش کنید.")
 
         now = time.time()
@@ -27,10 +29,10 @@ class RateLimitMiddleware:
         request_times.append(now)
         cache.set(cache_key, request_times, timeout=self.duration)
 
-        logger.debug(f"IP {ip} has made {len(request_times)} requests in the last 5 minutes.")
+        logger.debug(f"[REQUEST LOG] IP {ip} made {len(request_times)} requests in the last 5 minutes.")
 
         if len(request_times) > self.max_requests:
-            logger.error(f"IP {ip} is blocked for 2 minutes due to rate limit exceeded.")
+            logger.error(f"[RATE LIMIT EXCEEDED] IP {ip} exceeded limit and is now blocked for {self.block_duration} seconds.")
             cache.set(block_key, True, timeout=self.block_duration)
             return HttpResponseForbidden("⛔ شما برای ۲ دقیقه مسدود شده‌اید. لطفاً بعداً تلاش کنید.")
 
@@ -39,6 +41,10 @@ class RateLimitMiddleware:
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
         if x_forwarded_for:
-            return x_forwarded_for.split(",")[0].strip()
-        return request.META.get("REMOTE_ADDR")
+            ip = x_forwarded_for.split(",")[0].strip()
+            logger.debug(f"[IP DETECTED] Using X-Forwarded-For: {ip}")
+            return ip
+        ip = request.META.get("REMOTE_ADDR")
+        logger.debug(f"[IP DETECTED] Using REMOTE_ADDR: {ip}")
+        return ip
 

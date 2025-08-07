@@ -23,9 +23,9 @@ from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 from .models import UserSecondPassword
 import logging
+
+
 logger = logging.getLogger('user')
-
-
 def custom_simple_hash(password, salt='mysalt'):
     try:
         logger.info("🔐 Starting second password hashing.")
@@ -42,6 +42,7 @@ def custom_simple_hash(password, salt='mysalt'):
 def index(request):
     return render(request, 'user/index.html')  # صفحه اصلی
 
+logger = logging.getLogger('user')
 def home(request):
     form = CommentForm()
     comments = Comment.objects.filter(is_approved=True)
@@ -70,7 +71,7 @@ def home(request):
     })
 
 
-
+logger = logging.getLogger('user')
 def login_view(request):
     if request.method == 'POST':
         logger.info("📥 Login form submitted.")
@@ -139,7 +140,7 @@ def login_view(request):
     return render(request, 'user/login.html', {'form': form})
 
 
-
+logger = logging.getLogger('user')
 def send_login_link_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -169,7 +170,7 @@ def send_login_link_view(request):
             return render(request, 'user/send_link.html', {'error': 'ایمیل پیدا نشد.'})
     return render(request, 'user/send_link.html')
 
-
+logger = logging.getLogger('user')
 def confirm_login_link_view(request, token):
     email = verify_token(token)
     if not email:
@@ -189,7 +190,7 @@ def confirm_login_link_view(request, token):
         messages.error(request, 'کاربر یافت نشد.')
         return redirect('login')
 
-
+logger = logging.getLogger('user')
 def password_reset_view(request, token):
     email = verify_token(token)
     if not email:
@@ -222,6 +223,7 @@ def password_reset_view(request, token):
 import logging
 logger = logging.getLogger('user')
 
+logger = logging.getLogger('user')
 def signin_view(request):
     if request.method == 'POST':
         form = signinForm(request.POST)
@@ -280,19 +282,20 @@ def signin_view(request):
 
 
 
-
+logger = logging.getLogger('user')
 def user_profile_view(request, slug):
     user = get_object_or_404(User, slug=slug)
     logger.info(f"👤 Profile viewed: {user.username} (ID: {user.id}) by {request.user if request.user.is_authenticated else 'Anonymous'}")
     return render(request, 'user/profile.html', {'profile_user': user})
 
+logger = logging.getLogger('user')
 def profile_view(request, slug):
     user = get_object_or_404(User, slug=slug)
     logger.info(f"👤 Profile viewed: {user.username} (ID: {user.id}) by {request.user if request.user.is_authenticated else 'Anonymous'}")
     return render(request, 'user/profile.html', {'profile_user': user})
 
 
-
+logger = logging.getLogger('user')
 def PasswordReset_email_view(request):
     if request.method == 'POST':
         form = passwordResetForm(request.POST)
@@ -334,6 +337,8 @@ def PasswordReset_email_view(request):
 
     return render(request, 'user/passwordreset_email.html', {'form': form})
 
+
+logger = logging.getLogger('user')
 def forgot_password_view(request):
     if request.method == 'POST':
         form = passwordResetForm(request.POST)
@@ -360,7 +365,10 @@ def forgot_password_view(request):
 
     return render(request, 'user/forgot_password.html', {'form': form})
 
+logger = logging.getLogger('user')
 
+
+logger = logging.getLogger('user')
 def password_reset_link_view(request, token):
     email = verify_token(token)
     if not email:
@@ -392,6 +400,8 @@ def password_reset_link_view(request, token):
         form = PasswordChangeForm()
 
     return render(request, 'user/password_reset.html', {'form': form})
+
+logger = logging.getLogger('user')
 def verify_phone_view(request):
     if request.method == 'POST':
         code = request.POST.get('code')
@@ -427,6 +437,8 @@ def verify_phone_view(request):
 
     return render(request, 'user/verify_phone.html')
 
+
+logger = logging.getLogger('user')
 def verify_reset_code_view(request):
     if request.method == 'POST':
         entered_code = request.POST.get('code')
@@ -456,6 +468,7 @@ def verify_reset_code_view(request):
             messages.error(request, 'کد وارد شده صحیح نیست.')
 
     return render(request, 'user/verify_reset_code.html')
+
 
 def password_reset_confirm_view(request):
     user_id = request.session.get('password_reset_user_id')

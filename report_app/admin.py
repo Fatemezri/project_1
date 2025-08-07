@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Message
 from .forms import MessageAdminForm
+import logging
+logger = logging.getLogger('report')
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
