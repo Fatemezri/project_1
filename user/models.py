@@ -114,6 +114,9 @@ class UserSecondPassword(models.Model):
     def __str__(self):
         return f"SecondPassword for {self.user.username}"
 
+    class Meta:
+        verbose_name = 'رمز دوم'
+        verbose_name_plural = 'رمز دوم‌ها'
 
 
 class MediaFile(models.Model):
